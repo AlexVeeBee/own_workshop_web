@@ -1,4 +1,9 @@
 import type { MetaFunction } from "@remix-run/node";
+import "../style/index.css";
+import { AppHeader } from "~/components/header";
+import { Outlet } from "@remix-run/react";
+import WorkshopItem from "~/components/workshop.item";
+import { WorkshopHeader } from "~/components/WorkshopHeader";
 
 export const meta: MetaFunction = () => {
   return [
@@ -9,8 +14,33 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix</h1>
+    <>
+      <AppHeader />
+      <main>
+        <div className="center flex column">
+          <Outlet />
+          <WorkshopHeader title="Workshop" description="This is a workshop" />
+          <div className="flex">
+            <WorkshopItem
+              id="aa"
+              title="Asset 1"
+              description="This is a description"
+            />
+            <WorkshopItem
+              id="bb"
+              title="Asset 2"
+              description="This is a description"
+            />
+            <WorkshopItem
+              id="cc"
+              title="Asset 3"
+              description="This is a description"
+            />
+          </div>
+        </div>
+      </main>
+
+      {/* <h1>Welcome to Remix</h1>
       <ul>
         <li>
           <a
@@ -35,7 +65,7 @@ export default function Index() {
             Remix Docs
           </a>
         </li>
-      </ul>
-    </div>
+      </ul> */}
+    </>
   );
 }

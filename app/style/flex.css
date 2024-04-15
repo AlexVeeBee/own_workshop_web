@@ -1,0 +1,19 @@
+.fillwidth {
+    width: 100%;
+}
+.fillheight {
+    height: 100%;
+}
+
+.flex {
+    display: flex;
+}
+.flex.column {
+    flex-direction: column;
+}
+.flex.row {
+    flex-direction: row;
+}
+.flex.wrap {
+    flex-wrap: wrap;
+}
