@@ -52,6 +52,12 @@ header > .center {
     width: 100%;
     max-width: var(--page-width);
 }
+header > .center > .left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 6px 0;
+}
 
 .workshop-header {
     aspect-ratio: 1200 / 212;

@@ -14,7 +14,7 @@ export default function WorkshopItem(
         if (typeof window === 'undefined') {
             return;
         }
-        window.location.href = `/iten/${id}`;
+        window.location.href = `/item/${id}`;
     }
 
     return (

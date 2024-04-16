@@ -7,6 +7,8 @@ import {
   useRouteError,
 } from "@remix-run/react";
 import Error from "./components/_error";
+import { AppHeader } from "./components/header";
+import { UserProvider } from "./components/contexts/user/userProvider";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,7 +20,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <UserProvider>
+          <AppHeader />
+          {children}
+        </UserProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

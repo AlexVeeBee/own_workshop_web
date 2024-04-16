@@ -1,6 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
 import "../style/index.css";
-import { AppHeader } from "~/components/header";
 import { Outlet } from "@remix-run/react";
 import WorkshopItem from "~/components/workshop.item";
 import { WorkshopHeader } from "~/components/WorkshopHeader";
@@ -15,11 +14,10 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   return (
     <>
-      <AppHeader />
       <main>
         <div className="center flex column">
           <Outlet />
-          <WorkshopHeader title="Workshop" description="This is a workshop" />
+          {/* <WorkshopHeader title="Workshop" description="This is a workshop" /> */}
           <div className="flex">
             <WorkshopItem
               id="aa"
