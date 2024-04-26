@@ -1,31 +1,26 @@
-import React, { useEffect } from "react";
+import { Link } from "@remix-run/react";
+import React from "react";
+
+interface WorkshopItemProps {
+    id: string;
+    title: string;
+    description: string;
+    style?: React.CSSProperties;
+    image: string;
+}
 
 export default function WorkshopItem(
-    {id, title, description}: {
-        id: string,
-        title: string,
-        description: string
-    }
+    {id, title, description, style, image}: WorkshopItemProps
 ) {
-    useEffect(() => {
-        console.log("Workshop Item Mounted");
-    }, []);
-    const GoToItem = () => {
-        if (typeof window === 'undefined') {
-            return;
-        }
-        window.location.href = `/item/${id}`;
-    }
-
     return (
         // @ts-ignore
-        <div className="workshop-item" onClick={() => GoToItem(0)} style={{cursor: "pointer"}} >
-            <img src="https://via.placeholder.com/512"
+        <Link to={`/item/${id}`} className="workshop-item" style={{cursor: "pointer", ...style}}>
+            <img src={image}
             alt="Workshop" className={"image"} />
             <div className="details">
                 <h2>{title}</h2>
                 <p>{description}</p>
             </div>
-        </div>
+        </Link>
     );
 }

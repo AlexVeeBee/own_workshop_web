@@ -1,8 +1,6 @@
-import { useUser } from "./contexts/user/userProvider";
+import User from "./user";
 
 export function AppHeader() {
-    const user = useUser();
-
     return <>
         <header>
             <div className={"center"}>
@@ -10,7 +8,7 @@ export function AppHeader() {
                     <h1>Own Workshop</h1>
                 </div>
                 <div className="right">
-                    {user?.username}
+                    <User id={"1"} showUsername={true} />
                 </div>
             </div>
         </header>
