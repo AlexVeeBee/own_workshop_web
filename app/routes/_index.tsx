@@ -1,69 +1,69 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import "../style/index.css";
-import { Outlet } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import WorkshopItem from "~/components/workshop.item";
 import { WorkshopHeader } from "~/components/WorkshopHeader";
+import { IWorkshopItem, WorkshopInfo } from "~/utils/types";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "Own Workshop" },
+    { name: "description", content: "Self-hosted workshop" },
   ];
 };
 
+export const loader = async ({ params }: LoaderFunctionArgs) => {
+  const i = await fetch(`http://localhost:8080/api/info/get`);
+  if (!i.ok) {
+      throw new Error("Unable to fetch workshop info");
+  }
+  const w = await fetch(`http://localhost:8080/api/workshop`);
+  if (!w.ok) {
+      throw new Error("No items found");
+  }
+  const final = [ await w.json(), await i.json() ];
+  console.log(final);
+  return final;
+}
+
 export default function Index() {
+  const [items, info] = useLoaderData<
+    [IWorkshopItem[], WorkshopInfo]
+  >();
   return (
     <>
       <main>
-        <div className="center flex column">
-          <Outlet />
-          {/* <WorkshopHeader title="Workshop" description="This is a workshop" /> */}
-          <div className="flex">
-            <WorkshopItem
-              id="aa"
-              title="Asset 1"
-              description="This is a description"
-            />
-            <WorkshopItem
-              id="bb"
-              title="Asset 2"
-              description="This is a description"
-            />
-            <WorkshopItem
-              id="cc"
-              title="Asset 3"
-              description="This is a description"
-            />
+        <div className="center flex column mainbkg">
+          <WorkshopHeader 
+            title="Workshop"
+            description="This is a workshop"
+            image={`http://localhost:8080/${info.headerimage}`}
+          />
+          <div className="wrap align-top justify-center"
+            style={{
+              display: "grid",
+              maxWidth: "100%",
+              justifyContent: "center",
+              gridTemplateColumns: "repeat(auto-fill, minmax(256px, 1fr))",
+            }}
+          >
+          {/* <AutoColumn> */}
+            {
+              items.map((item) => (
+                <WorkshopItem
+                  key={item.id}
+                  id={item.id}
+                  title={item.name}
+                  description={item.description}
+                  image={`http://localhost:8080/${item.thumb}`}
+                  style={{ maxWidth: "512px", justifyContent: "flex-start" }}
+                />
+              ))
+            }
           </div>
+          {/* </AutoColumn> */}
         </div>
       </main>
-
-      {/* <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul> */}
     </>
   );
 }

@@ -39,7 +39,14 @@ export function ErrorBoundary() {
   const error = useRouteError();
   return (
     <>
-      <Error errordata={error} />
+      <main>
+        <div className="center flex column">
+          <div style={{ textAlign: "center", padding: "20px", paddingBottom: "0" }}>
+            <p>The entire website broke. Oops.</p>
+          </div>
+          <Error errordata={error} />
+        </div>
+    </main>
     </>
   );
 }
