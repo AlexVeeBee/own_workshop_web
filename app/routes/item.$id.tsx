@@ -95,12 +95,21 @@ export default function Item() {
             <div className="center mainbkg flex align-start" id="workshop-item">
                 <div className="left flex column">
                     <ImageGallery
-                        images={i.images?.map((image, index) => {
-                            return {
-                                image: `http://localhost:8080/${image}`,
-                                alt: `Image ${index + 1}`,
+                        images={
+                            i.images && i.images.length > 0 ? i.images.map(image => {
+                                return {
+                                    image: `http://localhost:8080/${image}`,
+                                    alt: "Workshop image",
+                                }
                             }
-                        }) || []}
+                            ) : [
+                                {
+                                    image: `http://localhost:8080/${i.thumb}`,
+                                    alt: "Workshop Thumbnail",
+                                    shortDescription: "Item Thumbnail image",
+                                }
+                            ]
+                        }
                     />
                     {/* <div className="image-gallery">
                         <div className="image" style={{aspectRatio: "16/9",}}>
@@ -137,13 +146,16 @@ export default function Item() {
                         <div>
                             <h1>{i.name}</h1>
                             <p>{i.description}</p>
+                            <button className="btn btn-success flex align-center" style={{gap: "10px"}}
+                                onClick={() => sidebar.openSidebar("right", <WorkshopItemSidebar thumb={i.thumb} tags={i.tags} authors={i.authors} />, {
+                                    id: "workshop-item-extrainfo",
+                                    width: "300px",
+                                })}
+                            >
+                            <Icon icon="information" />
+                            </button>
                         </div>
-                        <button className="btn btn-success flex align-center" style={{gap: "10px"}}
-                            onClick={() => sidebar.openSidebar("right", <WorkshopItemSidebar thumb={i.thumb} tags={i.tags} authors={i.authors} />, {
-                                id: "workshop-item-extrainfo",
-                                width: "300px",
-                            })}
-                        >
+                        <button className="btn btn-success flex align-center" style={{gap: "10px"}}>
                             Download as ZIP <Icon icon="folder" />
                         </button>
                     </Card>
@@ -153,7 +165,7 @@ export default function Item() {
                         </div>
                     </Card>
                 </div>
-                <div className="right">
+                <div className="right mobile-v-hide">
                     <WorkshopItemSidebar 
                     authors={i.authors}
                     thumb={showThumb ? i.thumb : null}

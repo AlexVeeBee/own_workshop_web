@@ -6,6 +6,7 @@ import { WorkshopHeader } from "~/components/WorkshopHeader";
 import { IWorkshopItem, WorkshopInfo } from "~/utils/types";
 import WorkshopItemSidebar from "~/components/workshop_page/item.sidebar";
 import SidebarFilters from "~/components/homepage/sidebar.filters";
+import Card from "~/components/card";
 
 export const meta: MetaFunction = () => {
   return [
@@ -34,35 +35,39 @@ export default function Index() {
   return (
     <>
       <main>
-        <div className="center flex column mainbkg">
+        <div className="center">
           <WorkshopHeader 
             title="Workshop"
             description="This is a workshop"
             image={`http://localhost:8080/${info.headerimage}`}
           />
-          <div className="flex" style={{ width: "100%" }}>
-            <div className="wrap align-top justify-center"
-              style={{
-                display: "grid",
-                width: "100%",
-                justifyContent: "center",
-                gridTemplateColumns: "repeat(auto-fill, minmax(256px, 1fr))",
-              }}
+        </div>
+        <div className="center flex column mainbkg" style={{padding: "20px"}}>
+          <div className="flex" style={{ width: "100%", gap: "20px" }}>
+            <Card
+              style={{padding: "0"}}
+              cardStyle={{padding: "0", width: "100%"}}
             >
-              {
-                items.map((item) => (
-                  <WorkshopItem
-                    key={item.id}
-                    id={item.id}
-                    title={item.name}
-                    description={item.description}
-                    image={`http://localhost:8080/${item.thumb}`}
-                    style={{ maxWidth: "512px", justifyContent: "flex-start" }}
-                  />
-                ))
-              }
-            </div>
-            <div className="right">
+              <div 
+                className="wrap align-top justify-center"
+                style={{padding: "12px", gap:"12px",  display: "grid", width: "100%", justifyContent: "center", 
+                gridTemplateColumns: "repeat(auto-fill, minmax(256px, 1fr))", }}
+              >
+                {
+                  items.map((item) => (
+                    <WorkshopItem
+                      key={item.id}
+                      id={item.id}
+                      title={item.name}
+                      description={item.description}
+                      image={`http://localhost:8080/${item.thumb}`}
+                      style={{ maxWidth: "512px", justifyContent: "flex-start" }}
+                    />
+                  ))
+                }
+              </div>
+            </Card>
+            <div className="right mobile-v-hide">
               <SidebarFilters />
             </div>
           </div>

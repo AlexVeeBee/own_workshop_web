@@ -25,21 +25,22 @@ export default function DebugPage() {
             >
                 <p>This is a debug page. It is used to test and debug the website.</p>
                 <h1>Image Gallery</h1>
-                <div className="flex justify-start align-start">
+                <div className="flex justify-start align-start fillwidth">
                     <ImageGallery
                         images={[
+                            // place holder images
                             {
-                                image: "http://localhost:8080/assets/items/5/images/1.jpg",
+                                image: "https://via.placeholder.com/50",
                                 alt: "Image 1",
-                                shortDescription: "Toru from Dragon Maid",
+                                shortDescription: "This is a placeholder image",
                             },
                             {
-                                image: "http://localhost:8080/assets/items/5/images/CalmTFDown.jpg",
+                                image: "https://via.placeholder.com/500x200",
                                 alt: "Image 2",
-                                shortDescription: "This is a funny image",
+                                shortDescription: "This is a placeholder image",
                             },
                             {
-                                image: "http://localhost:8080/assets/items/5/images/image0.gif",
+                                image: "https://via.placeholder.com/1920x1080",
                                 alt: "Image 3",
                             }
                         ]}
@@ -47,11 +48,12 @@ export default function DebugPage() {
                     <ImageGallery
                         images={[
                             {
-                                image: "http://localhost:8080/assets/items/5/images/1.jpg",
+                                image: "https://via.placeholder.com/150",
                                 alt: "Image 1",
-                                shortDescription: "Toru from Dragon Maid",
+                                shortDescription: "Single image",
                             },
-                        ]} />
+                        ]} 
+                    />
 
                 </div>
             </div>

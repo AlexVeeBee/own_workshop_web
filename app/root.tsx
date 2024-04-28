@@ -13,6 +13,7 @@ import { UserProvider } from "./components/contexts/user/userProvider";
 import { SidebarProvider } from "./components/contexts/sidebar/sidebarProvider";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { IUser } from "./utils/types";
+import Footer from "./components/footer";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const f = await fetch(`http://localhost:8080/api/user/get/1`);
@@ -39,6 +40,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               user={i}
             />
             {children}
+            <Footer />
           </SidebarProvider>
         </UserProvider>
         <ScrollRestoration />
