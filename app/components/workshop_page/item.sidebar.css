@@ -1,0 +1,27 @@
+.workshop-item-sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.workshop-item-sidebar img.workshop-item-thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--item-thumb-aspect-ratio);
+    background-size: contain;
+    background-position: center;
+    object-fit: contain;
+    background-color: black;
+}
+
+.workshop-item-sidebar .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.workshop-item-sidebar .tags > .tag {
+    padding: 4px 8px;
+    border-radius: 64px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 0.8em;
+}
