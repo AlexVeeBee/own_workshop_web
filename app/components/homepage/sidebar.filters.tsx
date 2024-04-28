@@ -1,7 +1,12 @@
+import Card from "../card";
+
 export default function SidebarFilters() {
     return (
-        <div>
+        <Card 
+            style={{gap: "4px", height: "100%"}}
+            cardStyle={{height: "100%"}}
+            >
             <h1>sidebarFilters</h1>
-        </div>
+        </Card>
     )
 }
