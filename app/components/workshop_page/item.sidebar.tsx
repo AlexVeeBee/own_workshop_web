@@ -14,11 +14,7 @@ export default function WorkshopItemSidebar({
 }) {
     return (
         <div className="workshop-item-sidebar" style={style}>
-            {
-                thumb && (
-                    <img src={`http://localhost:8080/${thumb}`} alt="Workshop preview image" className="thumb" />
-                )
-            }
+            { thumb && ( <img src={`http://localhost:8080/${thumb}`} alt="Workshop preview image" className="thumb" /> )}
             <h3>Tags</h3>
             <div className="tags">
                 {tags && tags.map((tag, index) => (
@@ -26,10 +22,10 @@ export default function WorkshopItemSidebar({
                 ))}
             </div>
             <Card
-                style={{display: "flex", flexDirection: "column",}}
+                style={{display: "flex", flexDirection: "column", gap: "4px"}}
             >
-                <p>Authors:</p>
-                <div className="authors flex column">
+                <p>Created by:</p>
+                <div className="authors flex column" style={{gap: "4px"}}>
                     {authors.map((author, index) => (
                         <User key={index} data={
                             {
