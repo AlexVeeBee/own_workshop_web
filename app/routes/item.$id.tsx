@@ -95,13 +95,12 @@ export default function Item() {
             <div className="center mainbkg flex align-start" id="workshop-item">
                 <div className="left flex column">
                     <ImageGallery
-                        images={[]}
-                        // images={i.images?.map((image, index) => {
-                        //     return {
-                        //         image: `http://localhost:8080/${image}`,
-                        //         alt: `Image ${index + 1}`,
-                        //     }
-                        // }) || []}
+                        images={i.images?.map((image, index) => {
+                            return {
+                                image: `http://localhost:8080/${image}`,
+                                alt: `Image ${index + 1}`,
+                            }
+                        }) || []}
                     />
                     {/* <div className="image-gallery">
                         <div className="image" style={{aspectRatio: "16/9",}}>
