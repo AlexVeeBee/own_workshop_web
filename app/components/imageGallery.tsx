@@ -43,6 +43,12 @@ export default function ImageGallery({
     }
 
     useEffect(() => {
+        if (!itemimageref.current) {
+            setShowOverlay(true);
+            setOverlayContent(
+                <p>No image</p>
+            );
+        }
         if (itemimageref.current) {
             itemimageref.current.addEventListener("error", () => {
                 setImageLoadingState("error");
@@ -87,16 +93,6 @@ export default function ImageGallery({
         }
     }, [imageLoadingState])
 
-    useEffect(() => {
-        // images.length
-        if (images.length === 0) {
-            setShowOverlay(true);
-            setOverlayContent(
-                <p>No images</p>
-            );
-        }
-    }, [images])
-
 
     return (
         <div className={`imageGallery ${className}`}>
@@ -107,7 +103,7 @@ export default function ImageGallery({
                     )
                 }
                 {
-                    images.length > 1 && (
+                    images.length > 0 && (
                         <>
                         <img ref={itemimageref} src={images[currentImage].image} alt={images[currentImage].alt || defaultAlt} 
                             className="mainImage"
