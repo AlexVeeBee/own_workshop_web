@@ -4,13 +4,26 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
   useRouteError,
 } from "@remix-run/react";
 import Error from "./components/_error";
 import { AppHeader } from "./components/header";
 import { UserProvider } from "./components/contexts/user/userProvider";
+import { SidebarProvider } from "./components/contexts/sidebar/sidebarProvider";
+import { LoaderFunctionArgs } from "@remix-run/node";
+import { IUser } from "./utils/types";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const f = await fetch(`http://localhost:8080/api/user/get/1`);
+  if (!f.ok) {
+    return { status: 404 };
+  }
+  return f.json();
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const i = useLoaderData<IUser>();
   return (
     <html lang="en">
       <head>
@@ -21,8 +34,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <UserProvider>
-          <AppHeader />
-          {children}
+          <SidebarProvider>
+            <AppHeader
+              user={i}
+            />
+            {children}
+          </SidebarProvider>
         </UserProvider>
         <ScrollRestoration />
         <Scripts />
