@@ -1,9 +1,11 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import "../style/index.css";
 import { useLoaderData } from "@remix-run/react";
-import WorkshopItem from "~/components/workshop.item";
+import WorkshopItem from "~/components/workshop_page/workshop.item";
 import { WorkshopHeader } from "~/components/WorkshopHeader";
 import { IWorkshopItem, WorkshopInfo } from "~/utils/types";
+import WorkshopItemSidebar from "~/components/workshop_page/item.sidebar";
+import SidebarFilters from "~/components/homepage/sidebar.filters";
 
 export const meta: MetaFunction = () => {
   return [
@@ -22,7 +24,6 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
       throw new Error("No items found");
   }
   const final = [ await w.json(), await i.json() ];
-  console.log(final);
   return final;
 }
 
@@ -39,29 +40,32 @@ export default function Index() {
             description="This is a workshop"
             image={`http://localhost:8080/${info.headerimage}`}
           />
-          <div className="wrap align-top justify-center"
-            style={{
-              display: "grid",
-              maxWidth: "100%",
-              justifyContent: "center",
-              gridTemplateColumns: "repeat(auto-fill, minmax(256px, 1fr))",
-            }}
-          >
-          {/* <AutoColumn> */}
-            {
-              items.map((item) => (
-                <WorkshopItem
-                  key={item.id}
-                  id={item.id}
-                  title={item.name}
-                  description={item.description}
-                  image={`http://localhost:8080/${item.thumb}`}
-                  style={{ maxWidth: "512px", justifyContent: "flex-start" }}
-                />
-              ))
-            }
+          <div className="flex" style={{ width: "100%" }}>
+            <div className="wrap align-top justify-center"
+              style={{
+                display: "grid",
+                width: "100%",
+                justifyContent: "center",
+                gridTemplateColumns: "repeat(auto-fill, minmax(256px, 1fr))",
+              }}
+            >
+              {
+                items.map((item) => (
+                  <WorkshopItem
+                    key={item.id}
+                    id={item.id}
+                    title={item.name}
+                    description={item.description}
+                    image={`http://localhost:8080/${item.thumb}`}
+                    style={{ maxWidth: "512px", justifyContent: "flex-start" }}
+                  />
+                ))
+              }
+            </div>
+            <div className="right">
+              <SidebarFilters />
+            </div>
           </div>
-          {/* </AutoColumn> */}
         </div>
       </main>
     </>

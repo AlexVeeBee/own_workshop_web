@@ -1,9 +1,24 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useLoaderData, useParams, useRouteError } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import LoadingCircle from "~/components/LoadingCircle";
 import Card from "~/components/card";
 import { IWorkshopItem } from "~/utils/types";
+import { SidebarContext } from "~/components/contexts/sidebar/sidebarContext";
+
+import "~/style/workshop-page.css";
+import { useSidebar } from "~/components/contexts/sidebar/sidebarProvider";
+import WorkshopItemSidebar from "~/components/workshop_page/item.sidebar";
+import Icon from "~/components/icons";
+import ImageGallery from "~/components/imageGallery";
+
+export const meta: MetaFunction = () => {
+    return [
+      { title: "Item" },
+      { name: "description", content: "" },
+    ];
+  };
+  
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     const f = await fetch(`http://localhost:8080/api/workshop/get/${params.id}`);
@@ -11,15 +26,26 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
         throw new Error("Item not found");
     }
     return f.json();
-    // return { id: params.id };
 }
 
 type IImageLoadingStatus = "loading" | "loaded" | "error";
 export default function Item() {
+    const sidebar = useSidebar()
     const i = useLoaderData<IWorkshopItem>();
     const [selectedImage, setSelectedImage] = useState(0);
     const [imageLoadingStatus, setImageLoadingStatus] = useState<IImageLoadingStatus>("loading");
     const itemimageref = useRef<HTMLImageElement>(null);
+    const [showThumb, setShowThumb] = useState(true);
+
+    // set meta tags
+    useEffect(() => {
+        document.title = i.name;
+        document.querySelector('meta[name="description"]')?.setAttribute("content", i.description);
+    }, [i])
+
+    useEffect(() => {
+        i.images && i.images.length > 0 ? setShowThumb(true) : setShowThumb(false);
+    }, [])
 
     if (itemimageref.current) {
         const observer = new MutationObserver((changes) => {
@@ -60,130 +86,79 @@ export default function Item() {
 
     return (
         <main id="workshop-item-container">
-            <style>
-                {
-                    `
-                    #workshop-item-container {
-                    }
-                    .item-image {
-                        overflow: hidden;
-                        position: relative;
-                    }
-                    .item-image img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: contain;  
-                    }
-                    .item-images-row {
-                        background: var(--card-bkg-color);
-                        width: 100%;
-                        display: flex;
-                        gap: 10px;
-                        margin-top: -10px;
-                        overflow: auto;
-                    }
-                    .item-images-row img {
-                        height: 100px;
-                        object-fit: contain;
-                        aspect-ratio: 16/9;
-                    }
-                    .item-images-row img.selected {
-                        outline: 4px solid var(--primary-color);
-                        outline-offset: -4px;
-                    }
-                    .item-image .image-status-overlay {
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        background: rgba(0, 0, 0, 0.5);
-                    }
-
-                    #workshop-item .left {
-                        width: auto;
-                        position: relative;
-                        overflow: hidden;
-                        width: 100%;
-                    }
-                    #workshop-item .right {
-                        position: relative;
-                        width: auto;
-                        position: relative;
-                        overflow: hidden;
-                        max-width: 300px;
-                        width: 100%;
-                        margin: 20px 20px 0 0;
-                    }
-                    #workshop-item .right img.thumb {
-                        background: var(--card-bkg-color);
-                        aspect-ratio: var(--item-thumb-aspect-ratio);
-                        width: 100%;
-                        height: 100%;
-                        object-fit: contain;
-                    }
-                    `
-                }
-            </style>
+            {i.properties?.CSS ? (<link rel="stylesheet" href={`http://localhost:8080/${i.properties.CSS}`} />) : null}
             <div className="center" style={{margin: "0 24px"}}>
                 <div style={{width: "100%", margin: "24px 0"}} className="margin">
                     <h1>Someonws Workshop</h1>
                 </div>
             </div>
             <div className="center mainbkg flex align-start" id="workshop-item">
-                <div style={{padding: "20px", gap: "20px", flexGrow: 1}} className="left flex column">
-                    <div className="item-image"
-                        style={{aspectRatio: "16/9",}}
-                    >
+                <div className="left flex column">
+                    <ImageGallery
+                        images={[]}
+                        // images={i.images?.map((image, index) => {
+                        //     return {
+                        //         image: `http://localhost:8080/${image}`,
+                        //         alt: `Image ${index + 1}`,
+                        //     }
+                        // }) || []}
+                    />
+                    {/* <div className="image-gallery">
+                        <div className="image" style={{aspectRatio: "16/9",}}>
+                            {
+                                imageLoadingStatus === "loading" && (<div className="image-status-overlay"><LoadingCircle /></div>)
+                            }
+                            {
+                                i.images && i.images.length > 0 ? (
+                                    <img ref={itemimageref} src={`http://localhost:8080/${i.images[selectedImage]}`} alt="Workshop" />
+                                ) : (
+                                    <img ref={itemimageref}src={`http://localhost:8080/${i.thumb}`} alt="Workshop" />
+                                )
+                            }
+                        </div>
                         {
-                            imageLoadingStatus === "loading" && (
-                            <div className="image-status-overlay">
-                                <LoadingCircle />
+                            i.images && i.images.length > 1 && (
+                                <div className="item-images-row">
+                                {
+                                    i.images.map((image, index) => {
+                                        return (
+                                            <img src={`http://localhost:8080/${image}`} alt="Workshop image"
+                                            key={index}
+                                            onClick={() => setSelectedImage(index)}
+                                            className={selectedImage === index ? "selected" : ""}
+                                            />
+                                        )
+                                    })
+                                }
                             </div>
                             )
                         }
-                        {/* check if there is a image in the iamges list
-                        if so, only show the first image,
-                        if not default to the thumb
-                        */}
-                        {
-                            i.images && i.images.length > 0 ? (
-                                <img ref={itemimageref} src={`http://localhost:8080/${i.images[selectedImage]}`} alt="Workshop" />
-                            ) : (
-                                <img ref={itemimageref}src={`http://localhost:8080/${i.thumb}`} alt="Workshop" />
-                            )
-                        }
-                    </div>
-                    {
-                        i.images && i.images.length > 1 && (
-                            <div className="item-images-row">
-                            {
-                                i.images.map((image, index) => {
-                                    return (
-                                        <img src={`http://localhost:8080/${image}`} alt="Workshop image"
-                                        key={index}
-                                        onClick={() => setSelectedImage(index)}
-                                        className={selectedImage === index ? "selected" : ""}
-                                        />
-                                    )
-                                })
-                            }
+                    </div> */}
+                    <Card style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+                        <div>
+                            <h1>{i.name}</h1>
+                            <p>{i.description}</p>
                         </div>
-                        )
-                    }
-                    <Card style={{display: "flex", flexDirection: "column",}}>
-                        <h1>{i.name}</h1>
-                        <p>{i.description}</p>
-                        <button className="btn btn-success">
-                            Download as ZIP
+                        <button className="btn btn-success flex align-center" style={{gap: "10px"}}
+                            onClick={() => sidebar.openSidebar("right", <WorkshopItemSidebar thumb={i.thumb} tags={i.tags} authors={i.authors} />, {
+                                id: "workshop-item-extrainfo",
+                                width: "300px",
+                            })}
+                        >
+                            Download as ZIP <Icon icon="folder" />
                         </button>
                     </Card>
+                    <Card>
+                        <div>
+                            <h3>Contained Files</h3>
+                        </div>
+                    </Card>
                 </div>
-                <div className="right" style={{ flexGrow: 1 }}>
-                    <img src={`http://localhost:8080/${i.thumb}`} alt="Workshop preview image" className="thumb" />
+                <div className="right">
+                    <WorkshopItemSidebar 
+                    authors={i.authors}
+                    thumb={showThumb ? i.thumb : null}
+                    tags={i.tags} />
                 </div>
             </div>
         </main>
@@ -198,7 +173,7 @@ export function ErrorBoundary() {
           <div className="center flex column">
             <div style={{ textAlign: "center", padding: "20px", paddingBottom: "0" }}>
                 {/* @ts-ignore */}
-                <p>Unable to fetch item: {error.message}</p>
+                <p>Error on this item: {error.message}</p>
             </div>
             {
                 // @ts-ignore
