@@ -2,7 +2,7 @@ import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import "../style/index.css";
 import { useLoaderData } from "@remix-run/react";
 import WorkshopItem from "~/components/workshop_page/workshop.item";
-import { WorkshopHeader } from "~/components/WorkshopHeader";
+import { WorkshopHeader } from "~/components/workshop_page/WorkshopHeader";
 import { IWorkshopItem, WorkshopInfo } from "~/utils/types";
 import WorkshopItemSidebar from "~/components/workshop_page/item.sidebar";
 import SidebarFilters from "~/components/homepage/sidebar.filters";
@@ -37,6 +37,7 @@ export default function Index() {
       <main>
         <div className="center">
           <WorkshopHeader 
+            textAlignment="right"
             title="Workshop"
             description="This is a workshop"
             image={`http://localhost:8080/${info.headerimage}`}

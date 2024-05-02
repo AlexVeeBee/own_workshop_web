@@ -1,36 +1,40 @@
-import { useLoaderData, useParams, useRouteError } from "@remix-run/react";
+import { Link, useLoaderData, useParams, useRouteError } from "@remix-run/react";
 import { useState } from "react";
 import { WorkshopHeader } from "~/components/workshop_page/WorkshopHeader";
 import { useUser } from "~/components/contexts/user/userProvider";
 import UserHeader from "~/components/user/UserHeader";
 import { IUser } from "~/utils/types";
-import { UserInfoCard } from "~/components/userInfoCard";
+import User from "~/components/user/user";
 
-export async function loader({ params }: { params: { id: string } }) {
-    const f = await fetch(`http://localhost:8080/api/user/get/${params.id}`);
+export async function loader() {
+    const f = await fetch(`http://localhost:8080/api/users`);
     if (!f.ok) {
-        throw new Error("User not found");
+        throw new Error("404");
     }
     return f.json();
 }
 
 export default function UserPage() {
-    const user = useLoaderData<IUser>()
+    const user = useLoaderData<IUser[]>()
 
     return (
         <main>
-            <div className="center flex column"
-                style={{
-                    position: "relative",
-                }}
-            >
-                <UserInfoCard 
-                    user={user} 
-                    className="fillwidth"
-                />
+            <div className="center flex column align-start" style={{padding:"12px 0" ,position: "relative",}}>
+                <h1>Users</h1>
             </div>
             <div className="center">
-                <div className="flex align-center" style={{gap: "10px"}}>
+                <div className="flex align-center column" style={{gap: "10px", width: "100%", textDecoration: "none"}}>
+                    {
+                        user.map((u) => (
+                            <Link to={`/user/${u.id}`} key={u.id}
+                                style={{width: "100%", textDecoration: "none"}}
+                            >
+                                <User
+                                    data={u}
+                                />
+                            </Link>
+                        ))
+                    }
                 </div>
             </div>
         </main>
@@ -45,7 +49,7 @@ export function ErrorBoundary() {
           <div className="center flex column">
             <div style={{ textAlign: "center", padding: "20px", paddingBottom: "0" }}>
                 {/* @ts-ignore */}
-                <p>Unable to fetch user: {error.message}</p>
+                <p>Unable to fetch users: {error.message}</p>
             </div>
             {
                 // @ts-ignore

@@ -32,9 +32,6 @@ type IImageLoadingStatus = "loading" | "loaded" | "error";
 export default function Item() {
     const sidebar = useSidebar()
     const i = useLoaderData<IWorkshopItem>();
-    const [selectedImage, setSelectedImage] = useState(0);
-    const [imageLoadingStatus, setImageLoadingStatus] = useState<IImageLoadingStatus>("loading");
-    const itemimageref = useRef<HTMLImageElement>(null);
     const [showThumb, setShowThumb] = useState(true);
 
     // set meta tags
@@ -46,43 +43,6 @@ export default function Item() {
     useEffect(() => {
         i.images && i.images.length > 0 ? setShowThumb(true) : setShowThumb(false);
     }, [])
-
-    if (itemimageref.current) {
-        const observer = new MutationObserver((changes) => {
-            // check if the src attribute has changed
-            if (changes.length === 1 && changes[0].attributeName === "src") {
-                setImageLoadingStatus("loading");
-            }
-        })
-        observer.observe(itemimageref.current, {
-            attributes: true,
-            attributeFilter: ["src"]
-        });
-    }
-
-    useEffect(() => {
-        if (itemimageref.current) {
-            itemimageref.current.addEventListener("error", () => {
-                setImageLoadingStatus("error");
-            });
-            itemimageref.current.addEventListener("load", () => {
-                setImageLoadingStatus("loaded");
-            });
-            // if the image is already loaded, set the status to loaded
-            if (itemimageref.current.complete) {
-                setImageLoadingStatus("loaded");
-            }
-
-            return () => {
-                itemimageref.current?.removeEventListener("error", () => {
-                    setImageLoadingStatus("error");
-                });
-                itemimageref.current?.removeEventListener("load", () => {
-                    setImageLoadingStatus("loaded");
-                });
-            }
-        }
-    }, [itemimageref]);
 
     return (
         <main id="workshop-item-container">
@@ -111,53 +71,27 @@ export default function Item() {
                             ]
                         }
                     />
-                    {/* <div className="image-gallery">
-                        <div className="image" style={{aspectRatio: "16/9",}}>
-                            {
-                                imageLoadingStatus === "loading" && (<div className="image-status-overlay"><LoadingCircle /></div>)
-                            }
-                            {
-                                i.images && i.images.length > 0 ? (
-                                    <img ref={itemimageref} src={`http://localhost:8080/${i.images[selectedImage]}`} alt="Workshop" />
-                                ) : (
-                                    <img ref={itemimageref}src={`http://localhost:8080/${i.thumb}`} alt="Workshop" />
-                                )
-                            }
-                        </div>
-                        {
-                            i.images && i.images.length > 1 && (
-                                <div className="item-images-row">
-                                {
-                                    i.images.map((image, index) => {
-                                        return (
-                                            <img src={`http://localhost:8080/${image}`} alt="Workshop image"
-                                            key={index}
-                                            onClick={() => setSelectedImage(index)}
-                                            className={selectedImage === index ? "selected" : ""}
-                                            />
-                                        )
-                                    })
-                                }
-                            </div>
-                            )
-                        }
-                    </div> */}
                     <Card style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
                         <div>
                             <h1>{i.name}</h1>
-                            <p>{i.description}</p>
+                            <p style={{opacity:"0.5"}}>This asset may contain copyrighted assets</p>
+                        </div>
+                        <div className="flex" style={{gap: "10px"}}>
+                            <button className="btn btn-success flex align-center" style={{gap: "10px"}}>
+                                Download as ZIP <Icon name="folder" />
+                            </button>
                             <button className="btn btn-success flex align-center" style={{gap: "10px"}}
-                                onClick={() => sidebar.openSidebar("right", <WorkshopItemSidebar thumb={i.thumb} tags={i.tags} authors={i.authors} />, {
+                                onClick={() => sidebar.openSidebar("right", <WorkshopItemSidebar thumb={i.thumb} tags={i.tags} creators={i.authors} />, {
                                     id: "workshop-item-extrainfo",
                                     width: "300px",
                                 })}
                             >
-                            <Icon icon="information" />
+                                <Icon name="information" />
                             </button>
                         </div>
-                        <button className="btn btn-success flex align-center" style={{gap: "10px"}}>
-                            Download as ZIP <Icon icon="folder" />
-                        </button>
+                    </Card>
+                    <Card>
+                        <p>{i.description}</p>
                     </Card>
                     <Card>
                         <div>
@@ -167,7 +101,7 @@ export default function Item() {
                 </div>
                 <div className="right mobile-v-hide">
                     <WorkshopItemSidebar 
-                    authors={i.authors}
+                    creators={i.authors}
                     thumb={showThumb ? i.thumb : null}
                     tags={i.tags} />
                 </div>
