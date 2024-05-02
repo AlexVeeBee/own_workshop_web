@@ -14,6 +14,9 @@ import { SidebarProvider } from "./components/contexts/sidebar/sidebarProvider";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { IUser } from "./utils/types";
 import Footer from "./components/footer";
+import { ModalProvider } from "./components/contexts/modal/modalProvider";
+import { Provider } from "react-redux";
+import store from "./utils/store";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const f = await fetch(`http://localhost:8080/api/user/get/1`);
@@ -34,15 +37,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <UserProvider>
-          <SidebarProvider>
-            <AppHeader
-              user={i}
-            />
-            {children}
-            <Footer />
-          </SidebarProvider>
-        </UserProvider>
+        <Provider store={store} >
+          <UserProvider>
+            <ModalProvider>
+              <SidebarProvider>
+                <AppHeader user={i} />
+                {children}
+                <Footer />
+              </SidebarProvider>
+            </ModalProvider>
+          </UserProvider>
+        </Provider>
         <ScrollRestoration />
         <Scripts />
       </body>

@@ -21,6 +21,7 @@ export interface IUser {
     id: string | number;
     username: string;
     pfp: string;
+    banner?: string | null;
 }
 
 export interface WorkshopInfo {
@@ -28,3 +29,5 @@ export interface WorkshopInfo {
     description: string;
     headerimage: string;
 }
+
+export type imageFitOptions = "contain" | "cover" | "original";
