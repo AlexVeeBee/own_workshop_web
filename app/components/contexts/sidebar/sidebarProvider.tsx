@@ -97,16 +97,6 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
       openSidebar,
       closeSidebar
     }}>
-      {/* <div className="debug">
-        <pre>
-          {JSON.stringify(holdOpenIdsLeft, null, 2)}
-          {JSON.stringify(leftSidebar, null, 2)}
-        </pre>
-        <pre>
-          {JSON.stringify(holdOpenIdsRight, null, 2)}
-          {JSON.stringify(rightSidebar, null, 2)}
-        </pre>
-      </div> */}
       <div className={`sidebar-container ${open ? "open" : ""}`}>
         <div className={`left-sidebar ${holdOpenIdsLeft?.length ? "has-content" : "" }`}>
             <div className="inner">
