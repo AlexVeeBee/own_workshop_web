@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link, useRouteError } from "@remix-run/react";
 import React from "react";
 
 interface WorkshopItemProps {
@@ -15,9 +15,7 @@ export default function WorkshopItem(
     return (
         // @ts-ignore
         <Link to={`/item/${id}`} className="workshop-item" style={{cursor: "pointer", ...style}}>
-            <img src={image}
-            alt="Workshop" className={"image"}
-            />
+            <img src={image} alt="Workshop" className={"image"} />
             <div className="details">
                 <h2>{title}</h2>
                 <p>{description}</p>

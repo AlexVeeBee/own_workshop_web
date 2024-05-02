@@ -1,0 +1,25 @@
+.icons-action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+.icons-action-bar.no-behavior {
+    opacity: 0.3;
+}
+.icons-action-bar button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0 4px;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: color 0.3s;
+    min-height: 24px;
+}
+.icons-action-bar button.active {
+    background-color: rgba(255, 255, 255, 0.2);
+}

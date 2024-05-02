@@ -1,9 +1,14 @@
 div.imageGallery {
+    --transition-duration: 0.2s;
+    --transition-animation: ease;
+    --overlay-bkg-color: rgba(0, 0, 0, 0.5);
+
     width: 100%;
     position: relative;
     display: flex;
     overflow: auto;
-    flex-wrap: wrap;
+    gap: 10px;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -24,16 +29,79 @@ div.imageGallery>.imageContainer {
     linear-gradient(-45deg, transparent 75%, var(--grid-color) 75%);
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    animation: moving-grid 5s infinite linear;
 }
-div.imageGallery>.imageContainer img {
+@keyframes moving-grid {
+    0% {
+        background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    }
+    100% {
+        background-position: 20px 20px, 20px 30px, 30px 10px, 10px 20px;
+    }
+}
+
+/* corner-hover */
+div.imageGallery>.imageContainer>.corner-hover {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    transform: translateY(100%);
+    transition: transform var(--transition-duration) var(--transition-animation);
+}
+div.imageGallery>.imageContainer>.corner-hover>.inner {
+    background-color: var(--overlay-bkg-color);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin: 10px;
+    padding: 10px;
+}
+div.imageGallery>.imageContainer:has(.shortDescription)>.corner-hover>.inner {
+    margin-bottom: 0;
+    background-color: transparent;
+    padding: 7px;
+}
+
+div.imageGallery>.imageContainer:hover>.corner-hover {
+    transform: translateY(0);
+}
+
+/* disablePointer  */
+div.imageGallery>.imageContainer.disablePointer {
+    cursor: default;
+}
+/* disableAspectRatio */
+div.imageGallery>.imageContainer.disableAspectRatio {
+    aspect-ratio: auto;
     width: 100%;
     height: 100%;
-    object-fit: contain;  
+    position: relative;
 }
+div.imageGallery>.imageContainer img {
+    /* width: 100%;
+    height: 100%; */
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+div.imageGallery>.imageContainer.imgfit-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+div.imageGallery>.imageContainer.imgfit-contain img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
 /* shortDescription */
 div.imageGallery>.imageContainer>.shortDescription {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--overlay-bkg-color);
     position: absolute;
     bottom: 0;
     left: 0;
@@ -43,17 +111,28 @@ div.imageGallery>.imageContainer>.shortDescription {
     gap: 10px;
     padding: 10px;
     transform: translateY(100%);
-    transition: transform 0.5s;
+    transition: transform var(--transition-duration) var(--transition-animation);
 }
 div.imageGallery>.imageContainer:hover>.shortDescription {
     transform: translateY(0);
+}
+/* imageinfo */
+div.imageGallery>.imageContainer>.imageinfo {
+    background-color: var(--overlay-bkg-color);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
 }
 div.imageGallery>.gallery {
     background: var(--card-bkg-color);
     width: 100%;
     display: flex;
     gap: 10px;
-    margin-top: 10px;
     overflow: auto;
 }
 div.imageGallery>.gallery>.image {
@@ -78,11 +157,11 @@ div.imageGallery>.imageContainer .overlay {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--overlay-bkg-color);
     display: none;
     justify-content: center;
     align-items: center;
-    z-index: 100;
+    z-index: 3;
 }
 /* showOverlay */
 div.imageGallery>.imageContainer .overlay.show {

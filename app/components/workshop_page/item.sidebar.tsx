@@ -1,20 +1,63 @@
-import { IUser } from "~/utils/types";
+import { IUser, imageFitOptions } from "~/utils/types";
 import Card from "../card";
 import User from "../user/user";
 import "./item.sidebar.css"
+import { useModal } from "../contexts/modal/modalProvider";
+import ImageGallery from "../imageGallery";
+import { UserInfoCard } from "../userInfoCard";
+import { ActionBar } from "../UI/IconsActionBar";
+import { useState } from "react";
+import ThumbnailPreviewModal from "./item.thumbnail_preview";
 
 export default function WorkshopItemSidebar({
-    thumb, tags, authors,
+    thumb, tags, creators,
     style,
 }: {
     thumb: string | null;
     tags?: string[],
-    authors: IUser[],
+    creators: IUser[],
     style?: React.CSSProperties;
 }) {
+    const [fitoptions, setFitOptions] = useState<imageFitOptions>("original");
+    const modal = useModal();
+    const openTumbModal = () => {
+        if (!thumb) return;
+        modal.openModal({
+            style: {
+                width: "100%",
+                height: "100%",
+                maxWidth: "90%",
+                display: "flex",
+                flexDirection: "column",
+            },
+            contentStyle: {
+                display: "flex",
+                flexDirection: "column",
+                height: "100%",
+            },
+            id: "workshop-thumb-modal",
+            title: "Thumbnail image",
+            content: (
+                <>
+                <ThumbnailPreviewModal image={`http://localhost:8080/${thumb}`} />
+                {/* <ImageGallery 
+                    style={{width: "100%", height: "100%"}}
+                    overrideAspectRatio={"1/1"}
+                    images={[{image: `http://localhost:8080/${thumb}`, alt: "Workshop preview image"}]}
+                    currImage={0}
+                    disableModal={true}
+                    imagefit={fitoptions}
+                />*/}
+                </>
+            ),
+        });
+    }
+    
     return (
         <div className="workshop-item-sidebar" style={style}>
-            { thumb && ( <img src={`http://localhost:8080/${thumb}`} alt="Workshop preview image" className="thumb" /> )}
+            { thumb && ( <img src={`http://localhost:8080/${thumb}`} alt="Workshop preview image" className="thumb"
+                onClick={openTumbModal}
+            /> )}
             <h3>Tags</h3>
             <div className="tags">
                 {tags && tags.map((tag, index) => (
@@ -26,14 +69,12 @@ export default function WorkshopItemSidebar({
             >
                 <p>Created by:</p>
                 <div className="authors flex column" style={{gap: "4px"}}>
-                    {authors.map((author, index) => (
+                    {creators.map((author, index) => (
                         <User key={index} data={
-                            {
-                                id: author.id,
-                                username: author.username,
-                                pfp: author.pfp,
-                            }
-                        } />
+                            author
+                        }
+                        showUserModal={true}
+                        />
                     ))}
                 </div>
             </Card>

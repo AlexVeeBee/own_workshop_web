@@ -36,9 +36,9 @@ export default function Error({
                     {errordata.stack && <pre>{errordata.stack}</pre>}
                 </Card>
                 <div className="flex wrap" style={{marginTop: "12px"}}>
-                    <button onClick={() => window.location.reload()} className="btn-primary">Reload</button>
+                    <button onClick={() => window.location.reload()} className="btn btn-primary">Reload</button>
                     {/* Create issue */}
-                    <a href="" className="btn-secondary">Create issue</a>
+                    <a href="" className="btn btn-secondary">Create issue</a>
                 </div>
             </div>
         </>
