@@ -27,6 +27,7 @@ export default function DebugPage() {
                 <h1>Image Gallery</h1>
                 <div className="flex justify-start align-start fillwidth">
                     <ImageGallery
+                        showimageinfo={true}
                         images={[
                             // place holder images
                             {
