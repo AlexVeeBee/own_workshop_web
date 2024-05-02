@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import LoadingCircle from "../LoadingCircle"
 import UserPFPIcon from "./user.pfpicon"
 import { useModal } from "../contexts/modal/modalProvider"
-import { UserInfoCard } from "../userInfoCard"
+import { UserInfoCard } from "./userInfoCard"
 
 interface ComponentUser {
     id?: string;

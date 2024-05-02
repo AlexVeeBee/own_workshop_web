@@ -4,7 +4,7 @@ import { WorkshopHeader } from "~/components/workshop_page/WorkshopHeader";
 import { useUser } from "~/components/contexts/user/userProvider";
 import UserHeader from "~/components/user/UserHeader";
 import { IUser } from "~/utils/types";
-import { UserInfoCard } from "~/components/userInfoCard";
+import { UserInfoCard } from "~/components/user/userInfoCard";
 
 export async function loader({ params }: { params: { id: string } }) {
     const f = await fetch(`http://localhost:8080/api/user/get/${params.id}`);

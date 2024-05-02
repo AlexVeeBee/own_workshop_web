@@ -4,7 +4,7 @@ import User from "../user/user";
 import "./item.sidebar.css"
 import { useModal } from "../contexts/modal/modalProvider";
 import ImageGallery from "../imageGallery";
-import { UserInfoCard } from "../userInfoCard";
+import { UserInfoCard } from "../user/userInfoCard";
 import { ActionBar } from "../UI/IconsActionBar";
 import { useState } from "react";
 import ThumbnailPreviewModal from "./item.thumbnail_preview";

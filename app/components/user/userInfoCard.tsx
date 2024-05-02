@@ -1,8 +1,8 @@
 import { IUser } from "~/utils/types"
-import { useModal } from "./contexts/modal/modalProvider"
-import UserHeader from "./user/UserHeader"
-import { WorkshopHeader } from "./workshop_page/WorkshopHeader"
-import User from "./user/user"
+import { useModal } from "../contexts/modal/modalProvider"
+import UserHeader from "./UserHeader"
+import { WorkshopHeader } from "../workshop_page/WorkshopHeader"
+import User from "./user"
 
 interface userInfoCard {
     user: IUser | null
@@ -36,7 +36,6 @@ export const UserInfoCard = ({
                     username: user.username,
                     pfp: `http://localhost:8080/${user.pfp}`
                 }} />
-            <h1>User</h1>
         </div>
     )
 }
