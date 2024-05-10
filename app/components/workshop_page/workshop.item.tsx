@@ -14,7 +14,7 @@ export default function WorkshopItem(
 ) {
     return (
         // @ts-ignore
-        <Link to={`/item/${id}`} className="workshop-item" style={{cursor: "pointer", ...style}}>
+        <Link to={`/item/${id}/overview`} className="workshop-item" style={{cursor: "pointer", ...style}}>
             <img src={image} alt="Workshop" className={"image"} />
             <div className="details">
                 <h2>{title}</h2>

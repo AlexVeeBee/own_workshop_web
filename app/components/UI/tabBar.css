@@ -1,0 +1,22 @@
+.tab-bar {
+    overflow: auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 5px solid var(--primary-color);
+    width: 100%;
+}
+
+.tab-bar .tab {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+.tab-bar .tab.active {
+    background: linear-gradient(to top, var(--primary-color) 0%, transparent 100%);
+    color: white;
+}
+
+.tab-bar>.left,
+.tab-bar>.right {
+    display: flex;
+}

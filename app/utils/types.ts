@@ -4,14 +4,26 @@ export type AssetProperties =
     | "VISIBILITY"
     ;
 
+interface IWorkshopItemLimits {
+    name: string;
+}
+
+export interface IWorkshopItemMedia {
+    src: string;
+    type: "image" | "video";
+}
+
 export interface IWorkshopItem {
     id: number;
     name: string;
     description: string;
+    version: string;
     tags: string[];
     thumb: string;
-    images?: string[];
+    media?: IWorkshopItemMedia[];
     authors: IUser[];
+    owner: IUser;
+    limits?: string[];
     properties?: {
         [key in AssetProperties]?: string;
     }

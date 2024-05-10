@@ -9,13 +9,23 @@ import { UserInfoCard } from "~/components/user/userInfoCard";
 export async function loader({ params }: { params: { id: string } }) {
     const f = await fetch(`http://localhost:8080/api/user/get/${params.id}`);
     if (!f.ok) {
-        throw new Error("User not found");
+        return { status: f.status };
     }
     return f.json();
 }
 
 export default function UserPage() {
-    const user = useLoaderData<IUser>()
+    const user = useLoaderData<IUser | { status: number }>()
+
+    if ("status" in user) {
+        return <>
+            <main>
+                <div className="center flex column">
+                    <h1>User not found: {user.status}</h1>
+                </div>
+            </main>
+        </>
+    }
 
     return (
         <main>

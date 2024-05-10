@@ -1,0 +1,62 @@
+.info-card {
+    --bkg-info: #0c3a58;
+    --bkg-success: #0a6a0a;
+    --bkg-warning: #8E5500;
+    --bkg-error: #8d0000;
+
+    --color-info: #fff;
+    --color-success: #fff;
+    --color-warning: #ffe6c2;
+    --color-error: #ffc3c3;
+
+    --link-color-info: #fff;
+    --link-color-success: #fff;
+    --link-color-warning: #FFA800;
+    --link-color-error: #ff6c6c;
+
+    width: 100%;
+    padding: 10px;
+    background-color: var(--card-bkg-color);
+}
+
+/* "info" | "success" | "warning" | "error" */
+
+.info-card.info {
+    background-color: var(--bkg-info);
+}
+.info-card.info * {
+    color: var(--color-info);
+}
+.info-card.info a {
+    color: var(--link-color-info);
+}
+
+.info-card.success {
+    background-color: var(--bkg-success);
+}
+.info-card.success * {
+    color: var(--color-success);
+}
+.info-card.success a {
+    color: var(--link-color-success);
+}
+
+.info-card.warning {
+    background-color: var(--bkg-warning);
+}
+.info-card.warning * {
+    color: var(--color-warning);
+}
+.info-card.warning a {
+    color: var(--link-color-warning);
+}
+
+.info-card.error {
+    background-color: var(--bkg-error);
+}
+.info-card.error * {
+    color: var(--color-error);
+}
+.info-card.error a {
+    color: var(--link-color-error);
+}

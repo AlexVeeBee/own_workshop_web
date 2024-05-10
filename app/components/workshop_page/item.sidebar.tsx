@@ -1,4 +1,4 @@
-import { IUser, imageFitOptions } from "~/utils/types";
+import { IUser, IWorkshopItem, imageFitOptions } from "~/utils/types";
 import Card from "../card";
 import User from "../user/user";
 import "./item.sidebar.css"
@@ -8,16 +8,29 @@ import { UserInfoCard } from "../user/userInfoCard";
 import { ActionBar } from "../UI/IconsActionBar";
 import { useState } from "react";
 import ThumbnailPreviewModal from "./item.thumbnail_preview";
+import InfoCard from "../UI/infoCard";
+
+interface WorkshopItemSidebar {
+    style?: React.CSSProperties;
+}
+
+interface minWorkshopItem {
+    thumb?: string;
+    tags?: string[];
+    authors: IUser[];
+    /**
+     * Owner of the item
+     * 
+     * Fallback if the list of authors is empty
+     */
+    owner?: IUser;
+    version: string;
+}
 
 export default function WorkshopItemSidebar({
-    thumb, tags, creators,
+    thumb, tags, authors, owner, version,
     style,
-}: {
-    thumb: string | null;
-    tags?: string[],
-    creators: IUser[],
-    style?: React.CSSProperties;
-}) {
+}: minWorkshopItem & WorkshopItemSidebar) {
     const [fitoptions, setFitOptions] = useState<imageFitOptions>("original");
     const modal = useModal();
     const openTumbModal = () => {
@@ -54,28 +67,44 @@ export default function WorkshopItemSidebar({
     }
     
     return (
-        <div className="workshop-item-sidebar" style={style}>
+        <div className="workshop-item-sidebar flex column" style={
+            {
+                ...style,
+                gap: "20px",
+            }
+        }>
             { thumb && ( <img src={`http://localhost:8080/${thumb}`} alt="Workshop preview image" className="thumb"
                 onClick={openTumbModal}
             /> )}
-            <h3>Tags</h3>
-            <div className="tags">
-                {tags && tags.map((tag, index) => (
-                    <span key={index} className="tag">{tag}</span>
-                ))}
-            </div>
-            <Card
-                style={{display: "flex", flexDirection: "column", gap: "4px"}}
-            >
-                <p>Created by:</p>
+            <Card style={{display: "flex", flexDirection: "column", gap: "4px"}}>
+            <h3>Version</h3>    
+                <p>{version || "No version"}</p>
+            </Card>
+            <Card style={{display: "flex", flexDirection: "column", gap: "4px"}}>
+                <h3>Tags</h3>
+                <div className="tags">
+                    {tags && tags.map((tag, index) => (
+                        <span key={index} className="tag">{tag}</span>
+                    ))}
+                </div>
+            </Card>
+            <Card style={{display: "flex", flexDirection: "column", gap: "4px"}}>
+                <p>{authors ? "Created by:" : "Owner:"}</p>
                 <div className="authors flex column" style={{gap: "4px"}}>
-                    {creators.map((author, index) => (
+                    {authors && authors.map((author, index) => (
                         <User key={index} data={
                             author
                         }
                         showUserModal={true}
                         />
                     ))}
+                    {!authors && owner && <User data={owner} showUserModal={true} />}
+                    {
+                        !authors && !owner && 
+                            <InfoCard status="warning">
+                                <p>No authors or owner attached</p>
+                            </InfoCard>
+                    }
                 </div>
             </Card>
         </div>

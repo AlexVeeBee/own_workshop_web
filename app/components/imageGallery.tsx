@@ -4,8 +4,9 @@ import LoadingCircle from "./LoadingCircle";
 import { useModal } from "./contexts/modal/modalProvider";
 import Icon from "./icons";
 
-interface imageItem {
-    image: string;
+interface MediaItem {
+    src: string;
+    type: "image" | "video";
     alt: string;
     shortDescription?: string;
 }
@@ -29,8 +30,17 @@ interface imageinfo {
         | "avif";
 }
 
+interface videoinfo {
+    size: `${number}x${number}`;
+    format:
+        | "unknown"
+        | "mp4"
+        | "webm"
+        | "ogg"
+}
+
 interface ImageGalleryProps {
-    images: imageItem[];
+    images: MediaItem[];
     imagefit?: "contain" | "cover" | "original"
     className?: string;
     defaultAlt?: string;
@@ -59,10 +69,23 @@ interface ImageGalleryProps {
      * like how zoom on a large image like how default behavior of a browser
      */
     zoomable?: boolean;
+    /**
+     * Appearance of the image switcher
+     * 
+     * - `thumbnail` - show thumbnails of the images
+     * - `arrows` - show arrows to switch images
+     * - `none` - don't show any image switcher
+     */
+    imageSwitcher?: imageSwitcherAppearance;
 }
 
+type imageSwitcherAppearance = 
+    | "thumbnail" 
+    | "arrows"
+    | "none";
+
 export default function ImageGallery({
-    images,
+    images: media,
     imagefit = "original",
     className = "",
     defaultAlt = "Gallery image",
@@ -72,101 +95,70 @@ export default function ImageGallery({
     overrideAspectRatio = null,
     disableModal = false,
     showimageinfo = false,
-    zoomable = false
+    zoomable = false,
+    imageSwitcher = "thumbnail"
 }: ImageGalleryProps) {
     const [currentImage, setCurrentImage] = useState(currImage);
     const [imageLoadingState, setImageLoadingState] = useState<"loading" | "loaded" | "error">("loading");
-    const [imageLoadingProgress, setImageLoadingProgress] = useState(0);
-    const itemimageref = useRef<HTMLImageElement>(null);
+    const itemimageref = useRef<HTMLImageElement | null>(null);
     const modal = useModal();
 
     const [showOverlay, setShowOverlay] = useState(true);
     const [overlayContent, setOverlayContent] = useState<JSX.Element | null>(<LoadingCircle />);
-    const [imageinfo, setImageinfo] = useState<imageinfo | null>(null);
-
-    const selectimage = (index: number) => {
-        setCurrentImage(index);
-    }
+    const [mediaInfo, setMediaInfo] = useState<imageinfo | videoinfo | null>(null);
     
     const verifyImageFormat = (format: string) => {
-        return ["png", "jpg", "jpeg", "webp", "svg", "gif", "bmp", "tiff", "ico", "cur", "heic", "heif", "avif"].includes(format);
+        return ["png", "jpg", "jpeg", "webp", "svg", "gif"].includes(format);
+        // return ["png", "jpg", "jpeg", "webp", "svg", "gif", "bmp", "tiff", "ico", "cur", "heic", "heif", "avif"].includes(format);
     }
 
     const getImageInfo = () => {
         if (!itemimageref.current) return;
-        setImageinfo({
-            size: `${itemimageref.current.naturalWidth}x${itemimageref.current.naturalHeight}`,
-            format: verifyImageFormat(itemimageref.current.src.split(".").pop() || "") ? itemimageref.current.src.split(".").pop() as imageinfo["format"] : "unknown"
+        const ref = itemimageref.current;
+        setMediaInfo({
+            size: `${ref.naturalWidth}x${ref.naturalHeight}`,
+            format: verifyImageFormat(ref.src.split(".").pop() || "") ? ref.src.split(".").pop() as imageinfo["format"] : "unknown"
         });
     }
 
-    if (itemimageref.current) {
+    useEffect(() => {
+        setImageLoadingState("loading");
+
+        if (!itemimageref.current) {
+            return;
+        };
+
         const observer = new MutationObserver((changes) => {
             if (changes.length === 1 && changes[0].attributeName === "src") {
                 setImageLoadingState("loading");
-                getImageInfo();
             }
         });
         observer.observe(itemimageref.current, {
             attributes: true,
             attributeFilter: ["src"]
         });
-    }
 
-    useEffect(() => {
-        if (!itemimageref.current) {
-            setShowOverlay(true);
-            setOverlayContent(
-                <p>No image</p>
-            );
+        itemimageref.current.onload = () => {
+            setImageLoadingState("loaded");
+            getImageInfo();
         }
-        if (itemimageref.current) {
-            itemimageref.current.addEventListener("error", () => {
-                setImageLoadingState("error");
-            });
-            itemimageref.current.addEventListener("load", () => {
-                setImageLoadingState("loaded");
-                getImageInfo();
-            });
-            // if the image is already loaded, set the status to loaded
-            if (itemimageref.current.complete) {
-                setImageLoadingState("loaded");
-                getImageInfo();
-            }
-
-            return () => {
-                itemimageref.current?.removeEventListener("error", () => {
-                    setImageLoadingState("error");
-                });
-                itemimageref.current?.removeEventListener("load", () => {
-                    setImageLoadingState("loaded");
-                });
-            }
+        itemimageref.current.onerror = () => {
+            setImageLoadingState("error");
         }
-    }, [itemimageref]);
-
-    const openImagePreviewModal = (data: imageItem) => {
-        if (!modal) return;
-        if (disableModal) return;
-        modal.openModal({
-            style: { width: "90dvw", height: "100vh"  },
-            contentStyle: {},
-            id: "imageGallery",
-            content: (
-                <ImageGallery
-                    imagefit="contain"
-                    style={{ width: "100%", height: "100%"}}
-                    images={[
-                        { image: images[currentImage].image, alt: images[currentImage].alt }
-                    ]}
-                    disableModal={true}
-                    defaultAlt={images[currentImage].alt}
-                    disableAspectRatio={true}
-                />
-            )
-        });
-    }
-
+        if (itemimageref.current.complete) {
+            setImageLoadingState("loaded");
+            getImageInfo();
+        }
+        
+        return () => {
+            if (itemimageref.current) {
+                itemimageref.current.onload = null;
+                itemimageref.current.onerror = null;
+            }
+            observer.disconnect();
+        }
+    }, [itemimageref])
+    
     useEffect(() => {
         switch (imageLoadingState) {
             case "loading":
@@ -190,10 +182,70 @@ export default function ImageGallery({
         }
     }, [imageLoadingState])
 
+    
+    const selectimage = (index: number) => {
+        if (index < 0 || index >= media.length) return;
+        setCurrentImage(index);
+    }
+
+    const switchImage = (index: number) => {
+        if (index < 0) {
+            setCurrentImage(media.length - 1);
+        } else if (index >= media.length) {
+            setCurrentImage(0);
+        } else {
+            setCurrentImage(index);
+        }
+    }
+
+    const openImagePreviewModal = () => {
+        if (!modal) return;
+        if (disableModal) return;
+
+        const modal_media: MediaItem[] = media
+            .filter(item => item.type === "image")
+            .map(image => {
+            return {
+                type: "image",
+                src: image.src,
+                alt: image.alt
+            }
+        })
+        if (modal_media.length === 0) return;
+
+
+        modal.openModal({
+            style: { width: "90dvw", height: "100vh"  },
+            contentStyle: {},
+            id: "imageGallery",
+            content: (
+                <ImageGallery
+                    imageSwitcher="arrows"
+                    imagefit="contain"
+                    style={{ width: "100%", height: "100%"}}
+                    currImage={currentImage}
+                    images={modal_media}
+                    // { image: images[currentImage].image, alt: images[currentImage].alt }
+                    disableModal={true}
+                    defaultAlt={media[currentImage].alt}
+                    disableAspectRatio={true}
+                />
+            )
+        });
+    }
+
     return (
         <div className={`imageGallery ${className}`} style={style}>
-            <div className={`imageContainer ${disableAspectRatio ? "disableAspectRatio" : ""} ${disableModal ? "disablePointer" : ""} imgfit-${imagefit}`}
-                onClick={() => openImagePreviewModal(images[currentImage])}
+            {/* <div className="debug">
+                <p>currentImage: {currentImage}</p>
+                <p>imageLoadingState: {imageLoadingState}</p>
+                <p>showOverlay: {showOverlay ? "true" : "false"}</p>
+                <p>overlayContent: {overlayContent ? "true" : "false"}</p>
+            </div> */}
+            <div className={`imageContainer ${disableAspectRatio ? "disableAspectRatio" : ""} ${disableModal ? "disablePointer" : ""} imgfit-${
+                imageLoadingState == "loaded" ? imagefit : "contain"
+            }`}
+                onClick={() => openImagePreviewModal()}
                 style={{
                     overflow: zoomable ? "auto" : "hidden",
                     aspectRatio: overrideAspectRatio || `16/9`,
@@ -205,26 +257,28 @@ export default function ImageGallery({
                         <div className={`overlay show`}> {overlayContent} </div>
                     )
                 }
-                {
-                    images.length > 0 && (
+                {   
+                    media.length > 0 &&
                         <>
-                        <img ref={itemimageref} src={images[currentImage].image} alt={images[currentImage].alt || defaultAlt} 
+                        <img 
+                            ref={itemimageref} 
+                            src={media[currentImage].src} 
+                            alt={media[currentImage].alt || defaultAlt} 
                             className="mainImage"
                         />
-                        { showimageinfo ? imageinfo ? (
+                        { showimageinfo ? mediaInfo ? (
                             <div className="imageinfo">
-                                <p>size: {imageinfo.size} format: {imageinfo.format}</p>
+                                <p>size: {mediaInfo.size} format: {mediaInfo.format}</p>
                             </div>
                         ) : (
                             <div className="imageinfo">
-                                <p>size: {itemimageref.current?.naturalWidth}x{itemimageref.current?.naturalHeight}</p>
+                                <p>Loading image info...</p>
                             </div>
                         ) : null }
-                        {images[currentImage].shortDescription && (
-                            <p className="shortDescription">{images[currentImage].shortDescription}</p>
+                        {media[currentImage].shortDescription && (
+                            <p className="shortDescription">{media[currentImage].shortDescription}</p>
                         )}
                         </>
-                    )
                 }
                 {
                     !disableModal && (
@@ -236,21 +290,40 @@ export default function ImageGallery({
                     )
                 }
             </div>
-            {
-                images.length > 1 && (
+            {   imageSwitcher === "thumbnail" &&
+                media.length > 1 && (
                 <div className="gallery">
                     {
-                        images.map((image, index) => {
+                        media.map((item, index) => {
                             return (
-                                <div className="image" key={index} onClick={() => selectimage(index)}>
-                                    <img src={image.image} alt={image.alt}
-                                        className={`thumbnail ${index === currentImage ? "selected" : ""}`}
+                                <div className="noselect image" key={index} onClick={() => selectimage(index)}>
+                                    <img src={item.src} alt={item.alt}
+                                        draggable={false}
+                                        className={`noselect thumbnail ${index === currentImage ? "selected" : ""}`}
                                     />
                                 </div>
                             );
                         })
                     }
                 </div>
+                )
+            }
+            {
+                imageSwitcher === "arrows" &&
+                media.length > 1 && (
+                    <>
+                        <div className="arrows flex">
+                            <button className="arrow left" onClick={() => switchImage(currentImage - 1)}>
+                                <Icon name="arrow_left" />
+                            </button>
+                            <div className="currentImage">
+                                {currentImage + 1} / {media.length}
+                            </div>
+                            <button className="arrow right" onClick={() => switchImage(currentImage + 1)}>
+                                <Icon name="arrow_right" />
+                            </button>
+                        </div>
+                    </>
                 )
             }
         </div>

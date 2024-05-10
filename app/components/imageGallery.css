@@ -82,12 +82,19 @@ div.imageGallery>.imageContainer.disableAspectRatio {
     position: relative;
 }
 div.imageGallery>.imageContainer img {
-    /* width: 100%;
-    height: 100%; */
+    /* make the browser not snap to the image */
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
 }
+/* hiddenImage */
+div.imageGallery>.imageContainer img.hiddenImage {
+    display: none;
+}
+div.imageGallery>.imageContainer img.hiddenImage.show {
+    display: block;
+}
+
 div.imageGallery>.imageContainer.imgfit-cover img {
     width: 100%;
     height: 100%;
@@ -149,6 +156,53 @@ div.imageGallery>.gallery img {
 div.imageGallery>.gallery img.selected {
     outline: 4px solid var(--primary-color);
     outline-offset: -4px;
+}
+div.imageGallery>.gallery>.image:hover {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+}
+/* arrows  */
+div.imageGallery>.arrows {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    /* height: 100%; */
+    margin-top: -10px;
+    pointer-events: none;
+    /* position: absolute; */
+    z-index: 2;
+}
+div.imageGallery>.arrows>.left,
+div.imageGallery>.arrows>.right {
+    pointer-events: auto;
+    cursor: pointer;
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    height: 100%;
+}
+div.imageGallery>.arrows .arrow {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border: none;
+    background-color: transparent;
+}
+div.imageGallery>.arrows .arrow:hover {
+    background-color: var(--overlay-bkg-color);
+}
+div.imageGallery>.arrows>.currentImage {
+    pointer-events: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    gap: 10px;
+    z-index: 2;
+    padding: 0 10px;
 }
 
 div.imageGallery>.imageContainer .overlay {

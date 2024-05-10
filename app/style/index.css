@@ -23,6 +23,16 @@
     --secondary-bkg-color: #181818;
 }
 
+.noselect {
+    user-select: none; /* Non-prefixed version, currently
+    supported by Chrome, Edge, Opera and Firefox */
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
 body {
     background-color: var(--primary-bkg-color);
 }
@@ -66,6 +76,51 @@ pre {
     padding: 16px;
     border-radius: 8px;
     overflow-x: auto;
+    font-family: 'Courier New', monospace;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="date"],
+input[type="time"] {
+    padding: 8px 16px;
+    border-radius: 8px;
+    background-color: #2C2C2C;
+    border: 1px solid var(--border-color);
+    color: #fff;
+    text-decoration: none;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus {
+    outline: none;
+    border: 1px solid var(--primary-color);
+}
+
+select {
+    padding: 8px 16px;
+    border-radius: 8px;
+    background-color: #2C2C2C;
+    border: 1px solid var(--border-color);
+    color: #fff;
+    text-decoration: none;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 main > .center {
@@ -240,5 +295,22 @@ footer > .center {
 @media (max-width: 762px) {
     .mobile-v-hide {
         display: none;
+    }
+}
+
+.pulse-attention {
+    background-color: transparent;
+    animation: pulse 3s linear infinite;
+}
+
+@keyframes pulse {
+    0% {
+        background-color: transparent;
+    }
+    50% {
+        background-color: rgb(255, 154, 2);
+    }
+    100% {
+        background-color: transparent;
     }
 }

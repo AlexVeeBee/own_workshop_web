@@ -1,4 +1,5 @@
 import instanceStore from "./store/instance";
+import userStore from "./store/user";
 import { IUser } from "./types";
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 
@@ -14,25 +15,11 @@ const initInstanceState = {
     title: "",
     description: ""
 }
-
-const initUserState: IUser = {
-    id: "",
-    username: "",
-    pfp: "",
-    banner: null
-}
-
-const reducer = {
-}
-
-// const reducer = (state = defaultState, action: updateAction) => {
-    
-// }
-
 const store = configureStore({
     reducer: {
         instance: instanceStore,
-    }
+        user: userStore
+    },
 })
 
 export default store;

@@ -7,6 +7,7 @@ import { IWorkshopItem, WorkshopInfo } from "~/utils/types";
 import WorkshopItemSidebar from "~/components/workshop_page/item.sidebar";
 import SidebarFilters from "~/components/homepage/sidebar.filters";
 import Card from "~/components/card";
+import InfoCard from "~/components/UI/infoCard";
 
 export const meta: MetaFunction = () => {
   return [

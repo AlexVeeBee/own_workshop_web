@@ -1,6 +1,20 @@
 // instance
 
-import { createSlice } from "@reduxjs/toolkit";
+import { Dispatch, createSlice } from "@reduxjs/toolkit";
+
+const getInstance = async () => {
+    const f = await fetch(`http://localhost:8080/api/info/get`);
+    if (!f.ok) {
+        throw new Error("404");
+    }
+    return f.json();
+}
+
+export const fetchInstance = () => async (dispatch: Dispatch) => {
+    const instance = await getInstance();
+    dispatch(setInstance(instance));
+}
+
 const initialState = {
     banner: null,
     title: "",

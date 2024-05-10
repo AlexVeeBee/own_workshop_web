@@ -1,3 +1,4 @@
+import InfoCard from "~/components/UI/infoCard";
 import ImageGallery from "~/components/imageGallery";
 
 export default function DebugPage() {
@@ -31,17 +32,20 @@ export default function DebugPage() {
                         images={[
                             // place holder images
                             {
-                                image: "https://via.placeholder.com/50",
+                                src: "https://via.placeholder.com/50",
+                                type: "image",
                                 alt: "Image 1",
                                 shortDescription: "This is a placeholder image",
                             },
                             {
-                                image: "https://via.placeholder.com/500x200",
+                                src: "https://via.placeholder.com/500x200",
+                                type: "image",
                                 alt: "Image 2",
                                 shortDescription: "This is a placeholder image",
                             },
                             {
-                                image: "https://via.placeholder.com/1920x1080",
+                                src: "https://via.placeholder.com/1920x1080",
+                                type: "image",
                                 alt: "Image 3",
                             }
                         ]}
@@ -49,14 +53,55 @@ export default function DebugPage() {
                     <ImageGallery
                         images={[
                             {
-                                image: "https://via.placeholder.com/150",
+                                src: "https://via.placeholder.com/150",
+                                type: "image",
                                 alt: "Image 1",
                                 shortDescription: "Single image",
                             },
                         ]} 
                     />
-
                 </div>
+                <ImageGallery
+                    imageSwitcher="arrows"
+                    showimageinfo={true}
+                    images={[
+                        // place holder images
+                        {
+                            src: "https://via.placeholder.com/50",
+                            type: "image",
+                            alt: "Image 1",
+                            shortDescription: "This is a placeholder image",
+                        },
+                        {
+                            src: "https://via.placeholder.com/500x200",
+                            type: "image",
+                            alt: "Image 2",
+                            shortDescription: "This is a placeholder image",
+                        },
+                        {
+                            src: "https://via.placeholder.com/1920x1080",
+                            type: "image",
+                            alt: "Image 3",
+                        }
+                    ]}
+                />
+                <h1>Info cards</h1>
+                <InfoCard status="info">
+                    <p>This is an info card</p>
+                    <a>Click me</a>
+                </InfoCard>
+                <InfoCard status="warning">
+                    <p>This is a warning card</p>
+                    <a>Click me</a>
+                </InfoCard>
+                <InfoCard status="error">
+                    <p>This is an error card</p>
+                    <a>Click me</a>
+                </InfoCard>
+                <InfoCard status="success">
+                    <p>This is a success card</p>
+                    <a>Click me</a>
+                </InfoCard>
             </div>
         </main>
     )

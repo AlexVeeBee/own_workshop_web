@@ -5,6 +5,7 @@ import LoadingCircle from "../LoadingCircle"
 import UserPFPIcon from "./user.pfpicon"
 import { useModal } from "../contexts/modal/modalProvider"
 import { UserInfoCard } from "./userInfoCard"
+import "./user.css"
 
 interface ComponentUser {
     id?: string;
@@ -12,6 +13,7 @@ interface ComponentUser {
     onClick?: () => void;
     data: IUser;
     showUserModal?: boolean; 
+    style?: React.CSSProperties;
 }
 
 export default function User({
@@ -20,10 +22,16 @@ export default function User({
     onClick,
     data,
     showUserModal = false,
+    style,
 }: ComponentUser) {
     const userContext = useUser()
     const modal = useModal()
     const [user, setUser] = useState<IUser | null>(null)
+    const [verified, setVerified] = useState(true)
+
+    const verifyUser = async (id: string | number) => {
+        return await fetch(`http://localhost:8080/api/user/verify/${id}`)
+    }
 
     useEffect(() => {
         if (data) {
@@ -39,8 +47,18 @@ export default function User({
         })
     }, [])
 
+    useEffect(() => {
+        verifyUser(data?.id).then((data) => {
+            console.log("verified user", data.status)
+            // check status
+            if (data.status === 404) {
+                setVerified(false)
+            }
+        });
+    }, [data])
+
     return (
-        <div className="flex align-center" style={{gap: "10px"}}
+        <div className="UI-user flex align-center" style={{gap: "10px", ...style}}
             onClick={() => {
                 if (onClick) onClick()
                 if (showUserModal) {
@@ -48,8 +66,21 @@ export default function User({
                     modal.openModal({
                         id: "user-modal",
                         title: `${user?.username || "..."}`,
-                        content: (
-                            <UserInfoCard user={user} />
+                        content: verified ? (
+                            <>
+                                <UserInfoCard user={user} />
+                                <div className="flex justify-center" style={{marginTop: "20px"}}>
+                                    <a 
+                                        className="btn" 
+                                        href={`/user/${user?.id}`}
+                                    >View workshop</a>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="flex align-center column" style={{gap: "10px", width: "100%", height: "100%", padding: "20px 0"}}>
+                                <h1>User not found</h1>
+                                <p>The user you are looking for does not exist</p>
+                            </div>
                         ),
                         style: {
                             width: "100%",

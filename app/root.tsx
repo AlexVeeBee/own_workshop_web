@@ -37,7 +37,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <Provider store={store} >
+        <Provider store={store}>
           <UserProvider>
             <ModalProvider>
               <SidebarProvider>

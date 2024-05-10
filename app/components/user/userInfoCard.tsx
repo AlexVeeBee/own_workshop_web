@@ -1,8 +1,6 @@
 import { IUser } from "~/utils/types"
-import { useModal } from "../contexts/modal/modalProvider"
 import UserHeader from "./UserHeader"
 import { WorkshopHeader } from "../workshop_page/WorkshopHeader"
-import User from "./user"
 
 interface userInfoCard {
     user: IUser | null
@@ -15,6 +13,7 @@ export const UserInfoCard = ({
     className,
     style
 }: userInfoCard) => {
+
     if (!user) return (
         <div>
             <h1>No user data</h1>
