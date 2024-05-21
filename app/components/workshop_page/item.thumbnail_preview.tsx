@@ -13,7 +13,7 @@ export default function ThumbnailPreviewModal({
         <>
             <ImageGallery
                 style={{ width: "100%", height: "100%" }}
-                images={[{ image: image, alt: "Workshop preview image" }]}
+                images={[{ src: image, type: "image", alt: "Workshop preview image" }]}
                 currImage={0}
                 disableModal={true}
                 imagefit={fitOptions}

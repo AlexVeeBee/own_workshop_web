@@ -1,0 +1,4 @@
+.markdown-container h1 {
+    font-size: 2.5rem;
+    border-bottom: 2px solid var(--border-color);
+}

@@ -1,5 +1,4 @@
 @import url(./flex.css);
-@import url(./buttons.css);
 
 * {
     margin: 0;
@@ -12,15 +11,25 @@
 :root {
     --item-thumb-aspect-ratio: 1 / 1;
     --page-width: 1200px;
-    --card-bkg-color: #2C2C2C;
-    --border-color: #4A4A4A;
+    /* --card-bkg-color: #2C2C2C;
+    --border-color: #4A4A4A; */
 }
 
-:root {
+/* 162621 */
+/* :root {
     --primary-color: #1168da;
     --secondary-color: #4921d8;
     --primary-bkg-color: #000000;
     --secondary-bkg-color: #181818;
+} */
+
+:root {
+    --primary-color: #036b66;
+    --secondary-color: #4921d8;
+    --primary-bkg-color: #0C1512;
+    --secondary-bkg-color: #0E1C18;
+    --card-bkg-color: #0d2b22;
+    --border-color: #15382d;
 }
 
 .noselect {
@@ -71,12 +80,28 @@ a {
     text-decoration: none;
 }
 
+ul {
+    margin-left: 16px;
+}
+
+
 pre {
     background-color: #333;
     padding: 16px;
     border-radius: 8px;
     overflow-x: auto;
     font-family: 'Courier New', monospace;
+}
+code {
+    background-color: #333;
+    padding: 4px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+blockquote {
+    padding-left: 16px;
+    border-left: 4px solid var(--primary-color);
+    font-style: italic;
 }
 
 input[type="text"],
@@ -168,29 +193,12 @@ footer > .center {
     margin: 0 12px;
 }
 
-.workshop-item {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    max-width: var(--page-width);
+div.divider {
     width: 100%;
-    position: relative;
+    height: 1px;
+    background-color: var(--border-color);
 }
-.workshop-item .details {
-    padding: 16px 0;
-}
-.workshop-item .image {
-    display: block;
-    border-radius: 8px;
-    width: 100%;
-    min-width: 100px;
-    aspect-ratio: var(--item-thumb-aspect-ratio);
-    background-size: contain;
-    background-position: center;
-    object-fit: contain;
-    background-color: black;
-}
+
 .card {
     display: flex;
     flex-direction: column;
@@ -295,6 +303,9 @@ footer > .center {
 @media (max-width: 762px) {
     .mobile-v-hide {
         display: none;
+    }
+    .flex.v-mobile {
+        flex-direction: column;
     }
 }
 

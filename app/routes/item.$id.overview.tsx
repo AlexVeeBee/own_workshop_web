@@ -2,7 +2,7 @@ import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useOutletContext, useRouteError } from "@remix-run/react";
 import { Suspense, useEffect, useState } from "react";
 import Card from "~/components/card";
-import { IWorkshopItem, IWorkshopItemMedia } from "~/utils/types";
+import { AssetVersion, IWorkshopItem, IWorkshopItemMedia } from "~/utils/types";
 
 import { useSidebar } from "~/components/contexts/sidebar/sidebarProvider";
 import WorkshopItemSidebar from "~/components/workshop_page/item.sidebar";
@@ -11,6 +11,8 @@ import ImageGallery from "~/components/imageGallery";
 import InfoCard from "~/components/UI/infoCard";
 import { useModal } from "~/components/contexts/modal/modalProvider";
 import DownloadAsModal from "~/components/UI/Modals/downloadas";
+import Button, { Buttons } from "~/components/UI/buttons";
+import { useAppSelector } from "~/utils/hooks";
 
 export const meta: MetaFunction = () => {
     return [
@@ -30,87 +32,150 @@ export const meta: MetaFunction = () => {
 
 type IImageLoadingStatus = "loading" | "loaded" | "error";
 export default function Item() {
-    const [filteredMediaTypes, setFilteredMediaTypes] = useState<IWorkshopItemMedia[]>([]);
+    const store = useAppSelector(state => state.user);
     const sidebar = useSidebar()
     const modal = useModal();
-    const i = useOutletContext<IWorkshopItem>();
+    const i = useOutletContext<{
+        item: IWorkshopItem,
+        versions: AssetVersion[],
+        versionsAvailable: boolean,
+    }>();
+    const [NSFW_warning, setNSFW_warning] = useState(i.item.nsfw);
+    useEffect(() => {
+        // check tags
+        if (i.item.tags.includes("NSFW")) {
+            setNSFW_warning(true);
+        }
+    }, [])
 
     // set meta tags
     useEffect(() => {
-        document.title = i.name;
-        document.querySelector('meta[name="description"]')?.setAttribute("content", i.description);
+        document.title = i.item.name;
+        document.querySelector('meta[name="description"]')?.setAttribute("content", i.item.description);
     }, [i])
 
-    useEffect(() => {
-        if (i.media) {
-            const filtered = i.media.filter(m => m.type === "image" || m.type === "video");
-            setFilteredMediaTypes(filtered);
+    const showAnyway = () => {
+        if (store.id) {
+            setNSFW_warning(false);
+            return;
         }
-    }, [i.media])
+        LoginToViewModal();
+    }
+
+    const LoginToViewModal = () => {
+        modal.openModal({
+            id: "login-to-view",
+            title: "Login to view",
+            contentStyle: {
+                padding: "20px",
+                width: "100%"
+            },
+            content: <Card
+                cardStyle={{padding: "20px", width: "100%"}}
+                style={{flexDirection: "column", gap: "10px"}}
+            >
+                <h1>You need to login to show NSFW content</h1>
+                <h3>Unless you know how to bypass this</h3>
+                <p>Would you like to login?</p>
+            </Card>,
+            style: {
+                maxWidth: "800px"
+            }
+        })
+    }
 
     const buttonDownloadAs = () => {
         modal.openModal({
             id: "downloadas",
-            title: "Download as",
+            title: "Download or share",
+            style: {
+                width: "600px"
+            },
             content: <DownloadAsModal
-                onClose={() => modal.closeModal("downloadas")}
-                itemid={i.id}
+                downloadAvailable={i.versionsAvailable}
+                version="latest"
+                itemid={i.item.id}
             />,
         })
     }
-
-    
 
     return (
             // <div className="center mainbkg flex align-start" id="workshop-item">
         <>
             <div className="left flex column">
-                <ImageGallery
-                    images={
-                        i.media && i.media.length > 0 ? i.media.map(image => {
-                            return {
-                                src: `http://localhost:8080/${image.src}`,
-                                type: image.type,
-                                alt: "Workshop image",
-                            }
-                        }
-                        ) : [
-                            {
-                                src: `http://localhost:8080/${i.thumb}`,
-                                type: "image",
-                                alt: "Workshop Thumbnail",
-                                shortDescription: "Item Thumbnail image",
-                            }
-                        ]
+                <div className="imageview">
+                    {
+                        NSFW_warning && <InfoCard 
+                            status="warning"
+                        >
+                            <div className="flex justify-between">
+                                <div className="flex align-center">
+                                    <Icon name="alert"/>
+                                    <p>This item contains NSFW content</p>
+                                </div>
+                                <Buttons.LiminalButton
+                                    style={{
+                                        padding: "5px 10px",
+                                        borderRadius: "64px",
+                                    }}
+                                    onClick={() => {
+                                        showAnyway();
+                                        // LoginToViewModal();
+                                        // setNSFW_warning(false);
+                                    }}
+                                >Show anyway</Buttons.LiminalButton>
+                            </div>
+                        </InfoCard>
                     }
-                />
+                    <ImageGallery
+                        blurImage={NSFW_warning}
+                        images={
+                            i.item.media && i.item.media.length > 0 ? i.item.media.map(image => {
+                                return {
+                                    src: `http://localhost:8080/${image.src}`,
+                                    smallsrc: image?.smallSrc && `http://localhost:8080/${image.smallSrc}`,
+                                    type: image.type,
+                                    alt: "Workshop image",
+                                }
+                            }
+                            ) : [
+                                {
+                                    src: `http://localhost:8080/${i.item.thumb}`,
+                                    type: "image",
+                                    alt: "Workshop Thumbnail",
+                                    shortDescription: "Item Thumbnail image",
+                                }
+                            ]
+                        }
+                    />
+                </div>
                 <Card style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
                     <div>
-                        <h1>{i.name}</h1>
+                        <h1>{i.item.name}</h1>
                         <p style={{opacity:"0.5"}}>This asset may contain copyrighted assets</p>
                     </div>
                     <div className="flex" style={{gap: "10px"}}>
-                        <button className="btn btn-success flex align-center" style={{gap: "10px"}} onClick={buttonDownloadAs}>
+                        <Button btnType="SUCCESS" className="flex align-center" style={{gap: "10px"}} onClick={buttonDownloadAs}>
                             <Icon name="download" />
-                        </button>
-                        <button className="btn btn-success flex align-center" style={{gap: "10px"}}
+                        </Button>
+                        <Button className="flex align-center" style={{gap: "10px"}}
                             onClick={() => sidebar.openSidebar("right", <WorkshopItemSidebar 
-                                version={i.version} 
-                                thumb={i.thumb} 
-                                tags={i.tags} 
-                                authors={i.authors} 
-                                owner={i.owner}
+                                version={i.versionsAvailable ? i.versions[0].version : ""}
+                                thumb=  {i.item.thumb} 
+                                tags=   {i.item.tags} 
+                                authors={i.item.authors} 
+                                owner=  {i.item.owner}
                             />, {
                                 id: "workshop-item-extrainfo",
                                 width: "300px",
                             })}
                         >
                             <Icon name="information" />
-                        </button>
+                        </Button>
                     </div>
                 </Card>
                 <Card>
-                    <p>{i.description}</p>
+                    <p>{i.item.description}</p>
                 </Card>
                 <Card>
                     <div>

@@ -1,0 +1,28 @@
+
+.workshop-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: var(--page-width);
+    width: 100%;
+    position: relative;
+    overflow: auto;
+}
+.workshop-item.blur img {
+    filter: blur(64px);
+}
+.workshop-item .details {
+    padding: 16px 0;
+}
+.workshop-item .image {
+    display: block;
+    border-radius: 8px;
+    width: 100%;
+    min-width: 100px;
+    aspect-ratio: var(--item-thumb-aspect-ratio);
+    background-size: contain;
+    background-position: center;
+    object-fit: contain;
+    background-color: black;
+}

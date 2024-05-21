@@ -1,6 +1,8 @@
 import { IUser } from "~/utils/types"
 import UserHeader from "./UserHeader"
 import { WorkshopHeader } from "../workshop_page/WorkshopHeader"
+import { useEffect, useState } from "react"
+import InfoCard from "../UI/infoCard"
 
 interface userInfoCard {
     user: IUser | null
@@ -13,6 +15,14 @@ export const UserInfoCard = ({
     className,
     style
 }: userInfoCard) => {
+    const verifyUser = async (id: string | number) => {
+        const f = await fetch(`http://localhost:8080/api/user/verify/${id}`)
+        return await f.json()
+    }
+
+    const [existsUser, setExistsUser] = useState(false)
+    const [userdata, setUserData] = useState<IUser | null>(null)
+    const [veryfying, setVeryfying] = useState(true)
 
     if (!user) return (
         <div>
@@ -21,19 +31,51 @@ export const UserInfoCard = ({
         </div>
     )
 
+    useEffect(() => {
+        setUserData(user)
+        
+        verifyUser(user?.id).then((data) => {
+            setVeryfying(false);
+            // check status
+            if (data.status === 404) {
+                setExistsUser(false);
+                return
+            }
+            setExistsUser(true);
+            setUserData(data);
+        });
+    }, [])
+
+    if (!userdata) return (
+        <InfoCard
+                status="info"
+            >
+            <p>Waiting for user data...</p>
+        </InfoCard>
+    )
+
     return (
         <div className={`user-info-card ${className || ""}`} style={style}>
+            {
+                veryfying ? ( 
+                    <InfoCard
+                        status="info"
+                    >
+                        <p>Veryfying user...</p>
+                    </InfoCard>
+                ) : null
+            }
             <WorkshopHeader
                 textAlignment="right"
-                title={`${user.username}'s profile`}
+                title={`${userdata?.username}'s profile`}
                 description=""
-                image={user.banner ? `http://localhost:8080/${user.banner}` : ""}
+                image={userdata?.banner ? `http://localhost:8080/${user.banner}` : ""}
             />
             <UserHeader
                 user={{
-                    id: user.id,
-                    username: user.username,
-                    pfp: `http://localhost:8080/${user.pfp}`
+                    id: userdata?.id,
+                    username: userdata?.username,
+                    pfp: `http://localhost:8080/${userdata.pfp}`
                 }} />
         </div>
     )

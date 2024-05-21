@@ -8,6 +8,7 @@ import Icon from "~/components/icons";
 import User from "~/components/user/user";
 import FormattedTextArea from "~/components/UI/formattedTextArea";
 import InfoCard from "~/components/UI/infoCard";
+import Markdown from "~/components/UI/Markdown";
 
 export const meta: MetaFunction = () => {
     return [
@@ -35,7 +36,7 @@ const Comment = ({ data }: { data: IComment }) => {
                 />
                 <span style={{width: "max-content"}}>{data.date}</span>
             </div>
-            <p>{data.comment}</p>
+            <Markdown markdown={data.comment} />
         </Card>
     )
 }
@@ -66,6 +67,9 @@ export default function ItemComments() {
         <>
             <div className="left flex column">
                 <h1>Comments</h1>
+                <InfoCard status="info">
+                    <b>This page has placeholders until a DB is implemented</b>
+                </InfoCard>
                 {
                     !disabled ? 
                     <>
@@ -73,7 +77,7 @@ export default function ItemComments() {
                             value=""
                             onChange={() => {}}
                             placeholder="Write a comment..." 
-                            style={{width: "100%", height: "100px"}}
+                            style={{width: "100%"}}
                         >
                         </FormattedTextArea>
                         <div className="flex justify-end">

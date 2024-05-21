@@ -18,7 +18,6 @@ export const meta: MetaFunction = () => {
 };
   
 export default function ItemConfig() {
-    const i = useOutletContext<IWorkshopItem>();
     return (
         <>
             <div className="left flex column">

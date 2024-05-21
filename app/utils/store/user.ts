@@ -1,6 +1,7 @@
 // user
+import { useDispatch } from "react-redux";
 import { IUser } from "../types";
-import { Dispatch, createSlice } from "@reduxjs/toolkit";
+import { Dispatch, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const getUser = async (id: string | number) => {
     id = id.toString();
@@ -11,12 +12,38 @@ const getUser = async (id: string | number) => {
     return f.json();
 }
 
+const userLogin = async (username: string, password: string) => {
+    const f = await fetch(`http://localhost:8080/api/user/login`, {
+        method: "POST",
+        body: JSON.stringify({
+            username,
+            password
+        })
+    });
+    if (!f.ok) {
+        throw new Error("User not found");
+    }
+    return f.json();
+
+}
+
 export const fetchUser = (id: string | number) => async (dispatch: Dispatch) => {
     const user = await getUser(id);
     dispatch(setUser(user));
 }
 
-const initialState: IUser = {
+export const fetchUserLogin = async (username: string, password: string) => async (dispatch: Dispatch) => {
+    const user = await userLogin(username, password);
+    dispatch(setUser(user));
+}
+
+const initialState: IUser & {
+    loggedIn: boolean;
+    attemptingLogin: boolean;
+    loginToken?: string;
+} = {
+    loggedIn: false,
+    attemptingLogin: false,
     id: "",
     username: "",
     pfp: "",
@@ -27,12 +54,15 @@ export const user = createSlice({
     name: "user",
     initialState,
     reducers: {
-        setUser: (state, action) => {
+        setUser: (state, action: PayloadAction<IUser>) => {
             state.id = action.payload.id;
             state.username = action.payload.username;
             state.pfp = action.payload.pfp;
             state.banner = action.payload.banner;
-        }
+        },
+        setAttemptingLogin: (state, action: PayloadAction<boolean>) => {
+            state.attemptingLogin = action.payload;
+        },
     }
 })
 

@@ -2,7 +2,7 @@ import { LoaderFunctionArgs, MetaFunction, redirect } from "@remix-run/node";
 import { Outlet, useLoaderData, useLocation, useOutlet, useRouteError } from "@remix-run/react";
 import { Suspense, useEffect, useState } from "react";
 import Card from "~/components/card";
-import { IWorkshopItem } from "~/utils/types";
+import { AssetVersion, IWorkshopItem } from "~/utils/types";
 
 import "~/style/workshop-page.css";
 import { useSidebar } from "~/components/contexts/sidebar/sidebarProvider";
@@ -11,6 +11,7 @@ import Icon from "~/components/icons";
 import ImageGallery from "~/components/imageGallery";
 import InfoCard from "~/components/UI/infoCard";
 import TabBar from "~/components/UI/tabBar";
+import Button, { Buttons } from "~/components/UI/buttons";
 
 export const meta: MetaFunction = () => {
     return [
@@ -23,6 +24,7 @@ const pages = [
     "overview",
     "comments",
     "changelog",
+    "versions",
     "config",
     "debug"
 ]
@@ -32,10 +34,20 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     if (!f.ok) {
         throw new Error("Item not found");
     }
+    const versions = await fetch(`http://localhost:8080/api/workshop/get/${params.id}/versions`);
+    if (!versions.ok) {
+        console.warn("[WARN]:Versions not found");
+    }
     return {
         id: params.id,
-        item: await f.json()
+        item: await f.json(),
+        versions: await versions.json()
     }
+}
+
+interface ItemWarning {
+    type: "warning" | "error" | "info",
+    message: string
 }
 
 type IImageLoadingStatus = "loading" | "loaded" | "error";
@@ -44,26 +56,37 @@ export default function Item() {
     const outlet = useOutlet();
     const i = useLoaderData<{ 
         id: string,
-        item: IWorkshopItem
+        item: IWorkshopItem,
+        versions: AssetVersion[],
+        // versions: {
+        //     version: string,
+        //     isLatest: boolean
+        // }[]
     }>();
     const [tabIndex, setTabIndex] = useState(-1);
     const [showThumb, setShowThumb] = useState(true);
+    const [versionsAvailable, setVersionsAvailable] = useState(false);
+    const [itemWarnings] = useState<Map<string, ItemWarning>>(new Map());
     useEffect(() => {
-    }, [])
-
-    const itemWarning: {
-        type: "warning" | "error" | "info",
-        message: string
-    }[] = [
-        // {
-        //     type: "warning",
-        //     message: "This item cannot be modified while being a placeholder"
-        // },
-        {
-            type: "info",
-            message: "This is only a placeholder"
+        if (i.versions.length > 0) {
+            setVersionsAvailable(true);
         }
-    ]
+    }, [i])
+
+    itemWarnings.set("placeholder", {
+        type: "info",
+        message: "This is only a placeholder"
+    })
+
+    useEffect(() => {
+        console.log("is nsfw", i.item.nsfw);
+        if (i.item.nsfw) {
+            itemWarnings.set("NSFW", {
+                type: "warning",
+                message: "This item is marked as NSFW"
+            });
+        }
+    }, [i])
     
     useEffect(() => {
         const page = window.location.pathname.split("/").pop();
@@ -87,12 +110,14 @@ export default function Item() {
                 </div>
             </div>
             {
-                itemWarning.length > 0 && <div className="center flex column" style={{
+                itemWarnings.size > 0 && <div className="center flex column" style={{
                     marginBottom: "20px"
                 }}>
                     {
-                        itemWarning.map((w, i) => {
-                            return <InfoCard key={i} status={w.type}>{w.message}</InfoCard>
+                        Array.from(itemWarnings).map(([key, value], i) => {
+                            return <InfoCard key={i} status={value.type}>
+                                <p>{value.message}</p>
+                            </InfoCard>
                         })
                     }
                 </div>
@@ -118,6 +143,11 @@ export default function Item() {
                         title: "Changelog",
                         link: `/item/${i.id}/changelog`,
                         position: "left"
+                    },  
+                    {
+                        title: "Versions",
+                        link: `/item/${i.id}/versions`,
+                        position: "left"
                     },
                     {
                         title: "Config",
@@ -133,10 +163,14 @@ export default function Item() {
             />
             </div>
             <div className="center mainbkg flex align-start" id="workshop-item">
-                { outlet ? <Outlet context={i.item} /> : <div className="left"></div> }
+                { outlet ? <Outlet context={{
+                    item: i.item,
+                    versions: i.versions,
+                    versionsAvailable: versionsAvailable,
+                }} /> : <div className="left"></div> }
                 <div className="right mobile-v-hide">
                     <WorkshopItemSidebar 
-                        version={i.item.version}
+                        version={versionsAvailable ? i.versions[0].version : ""}
                         authors={i.item.authors}
                         thumb={showThumb ? i.item.thumb : ""}
                         tags={i.item.tags}

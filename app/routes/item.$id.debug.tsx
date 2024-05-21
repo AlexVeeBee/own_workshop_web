@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { useLoaderData, useOutletContext, useRouteError } from "@remix-run/react";
+import { Link, useLoaderData, useOutletContext, useRouteError } from "@remix-run/react";
 import { Suspense, useEffect, useState } from "react";
 import Card from "~/components/card";
 import { IWorkshopItem } from "~/utils/types";
@@ -9,7 +9,7 @@ import WorkshopItemSidebar from "~/components/workshop_page/item.sidebar";
 import Icon from "~/components/icons";
 import ImageGallery from "~/components/imageGallery";
 import InfoCard from "~/components/UI/infoCard";
-import APIInterfaceViewer from "~/components/UI/api.modelViewer";
+import { useAppSelector } from "~/utils/hooks";
 
 export const meta: MetaFunction = () => {
     return [
@@ -20,12 +20,24 @@ export const meta: MetaFunction = () => {
   
 export default function ItemConfig() {
     const i = useOutletContext<IWorkshopItem>();
+    const store = useAppSelector(state => state.user);
     return (
         <>
             <div className="left flex column">
                 <h1>Debug</h1>
+                <InfoCard status="info">
+                    <b>Output from the backend</b><br></br>
+                    <a href="/api/swagger">More API docs</a>
+                </InfoCard>
                 <pre>
-                    {JSON.stringify(i, null, 2)}
+                    {
+                        !store.id 
+                        ?JSON.stringify([
+                            "You are not logged in",
+                            "This page is only available for logged in users"
+                        ], null, 2)
+                        :JSON.stringify(i, null, 2)
+                    }
                 </pre>
             </div>
         </>

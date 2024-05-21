@@ -35,7 +35,7 @@ export default function TabBar({
                     <div className="left">
                         {
                             tabs.map((tab, index) => (
-                                <Link key={index} to={tab.link || ""}>
+                                <Link key={index} to={tab.link || ""} className="noselect">
                                     <div key={index} className={`tab ${activeIndex === index ? "active" : ""}`} onClick={() => {
                                         if (tab.onClick) tab.onClick();
                                         onTabChange(index);

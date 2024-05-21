@@ -30,7 +30,8 @@ export default function User({
     const [verified, setVerified] = useState(true)
 
     const verifyUser = async (id: string | number) => {
-        return await fetch(`http://localhost:8080/api/user/verify/${id}`)
+        const f = await fetch(`http://localhost:8080/api/user/verify/${id}`)
+        return await f.json()
     }
 
     useEffect(() => {
@@ -52,42 +53,49 @@ export default function User({
             console.log("verified user", data.status)
             // check status
             if (data.status === 404) {
-                setVerified(false)
+                setVerified(false);
+                return
             }
+            setVerified(true);
+            setUser(data);
         });
     }, [data])
 
+    const openUserModal = () => {
+        modal.openModal({
+            id: "user-modal",
+            title: `${user?.username || "..."}`,
+            content: verified ? (
+                <>
+                    <UserInfoCard user={user} />
+                    <div className="flex justify-center" style={{marginTop: "20px"}}>
+                        <a 
+                            className="btn" 
+                            href={`/user/${user?.id}`}
+                        >View workshop</a>
+                    </div>
+                </>
+            ) : (
+                <div className="flex align-center column" style={{gap: "10px", width: "100%", height: "100%", padding: "20px 0"}}>
+                    <h1>User not found</h1>
+                    <p>The user you are looking for does not exist</p>
+                </div>
+            ),
+            style: {
+                width: "100%",
+                height: "100%",
+                maxWidth: "var(--page-width)",
+            }
+        })
+    }
+
     return (
         <div className="UI-user flex align-center" style={{gap: "10px", ...style}}
+            tabIndex={0}
             onClick={() => {
                 if (onClick) onClick()
                 if (showUserModal) {
-                    // open user modal
-                    modal.openModal({
-                        id: "user-modal",
-                        title: `${user?.username || "..."}`,
-                        content: verified ? (
-                            <>
-                                <UserInfoCard user={user} />
-                                <div className="flex justify-center" style={{marginTop: "20px"}}>
-                                    <a 
-                                        className="btn" 
-                                        href={`/user/${user?.id}`}
-                                    >View workshop</a>
-                                </div>
-                            </>
-                        ) : (
-                            <div className="flex align-center column" style={{gap: "10px", width: "100%", height: "100%", padding: "20px 0"}}>
-                                <h1>User not found</h1>
-                                <p>The user you are looking for does not exist</p>
-                            </div>
-                        ),
-                        style: {
-                            width: "100%",
-                            height: "100%",
-                            maxWidth: "var(--page-width)",
-                        }
-                    })
+                    openUserModal()
                 }
             }}
         >

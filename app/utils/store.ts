@@ -1,6 +1,5 @@
 import instanceStore from "./store/instance";
 import userStore from "./store/user";
-import { IUser } from "./types";
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 
 interface instacne {
@@ -9,12 +8,6 @@ interface instacne {
     description: string;
 }
 
-
-const initInstanceState = {
-    banner: null,
-    title: "",
-    description: ""
-}
 const store = configureStore({
     reducer: {
         instance: instanceStore,
@@ -23,3 +16,6 @@ const store = configureStore({
 })
 
 export default store;
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

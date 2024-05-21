@@ -5,20 +5,6 @@ import Modal from "./modal";
 export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
     const [modals, setModals] = useState<OpenModalProps[]>([]);
 
-    useEffect(() => {
-        if (modals.length > 0) {
-            const timers = modals.map((modal) => {
-                modal.open = true;
-            //     return setTimeout(() => {
-            //         setModals((prev) => {
-            //             return prev.filter((m) => m.id !== modal.id);
-            //         });
-            //     }, 1000);
-            });
-            // setModalRemovalTimers(timers);
-        }
-    }, [modals]);
-
     const openModal = (props: OpenModalProps) => {
         setModals((prev) => {
             const index = prev.findIndex((modal) => modal.id === props.id);

@@ -6,6 +6,7 @@ import Icon from "./icons";
 
 interface MediaItem {
     src: string;
+    smallsrc?: string;
     type: "image" | "video";
     alt: string;
     shortDescription?: string;
@@ -45,7 +46,15 @@ interface ImageGalleryProps {
     className?: string;
     defaultAlt?: string;
     currImage?: number;
+    /**
+     * Style of the image container
+     */
     style?: React.CSSProperties;
+    /**
+     * Disable the aspect ratio of the image container
+     * 
+     * This will make the image container to be responsive
+     */
     disableAspectRatio?: boolean;
     /**
      * Override the aspect ratio of the image container
@@ -77,6 +86,13 @@ interface ImageGalleryProps {
      * - `none` - don't show any image switcher
      */
     imageSwitcher?: imageSwitcherAppearance;
+
+    /**
+     * Blur the image
+     * 
+     * aslo shows the small image 
+     */
+    blurImage?: boolean;
 }
 
 type imageSwitcherAppearance = 
@@ -96,8 +112,14 @@ export default function ImageGallery({
     disableModal = false,
     showimageinfo = false,
     zoomable = false,
-    imageSwitcher = "thumbnail"
+    imageSwitcher = "thumbnail",
+    blurImage = false
 }: ImageGalleryProps) {
+    const [jsLoaded, setJsLoaded] = useState(false);
+    useEffect(() => {
+        setJsLoaded(true);
+    }, [])
+
     const [currentImage, setCurrentImage] = useState(currImage);
     const [imageLoadingState, setImageLoadingState] = useState<"loading" | "loaded" | "error">("loading");
     const itemimageref = useRef<HTMLImageElement | null>(null);
@@ -157,7 +179,7 @@ export default function ImageGallery({
             }
             observer.disconnect();
         }
-    }, [itemimageref])
+    }, [itemimageref, jsLoaded])
     
     useEffect(() => {
         switch (imageLoadingState) {
@@ -200,6 +222,7 @@ export default function ImageGallery({
 
     const openImagePreviewModal = () => {
         if (!modal) return;
+        if (blurImage) return;
         if (disableModal) return;
 
         const modal_media: MediaItem[] = media
@@ -243,7 +266,7 @@ export default function ImageGallery({
                 <p>overlayContent: {overlayContent ? "true" : "false"}</p>
             </div> */}
             <div className={`imageContainer ${disableAspectRatio ? "disableAspectRatio" : ""} ${disableModal ? "disablePointer" : ""} imgfit-${
-                imageLoadingState == "loaded" ? imagefit : "contain"
+                imageLoadingState == "loaded" && !blurImage ? imagefit : "contain"
             }`}
                 onClick={() => openImagePreviewModal()}
                 style={{
@@ -253,19 +276,29 @@ export default function ImageGallery({
                 }}
             >
                 {
-                    showOverlay && (
-                        <div className={`overlay show`}> {overlayContent} </div>
-                    )
+                    blurImage ? (
+                        <div className="overlay show blur">
+                            <Icon 
+                                size="128px"
+                                name="eye_off"
+                            />
+                        </div>
+                    ) : null
+                }
+                {
+                    showOverlay ? (
+                        <div className={`overlay show ${blurImage ? "blur" : ""}`}> {overlayContent} </div>
+                    ) : null
                 }
                 {   
                     media.length > 0 &&
                         <>
-                        <img 
+                        {jsLoaded ? <img 
                             ref={itemimageref} 
-                            src={media[currentImage].src} 
+                            src={!blurImage ? media[currentImage].src : media[currentImage].smallsrc || media[currentImage].src} 
                             alt={media[currentImage].alt || defaultAlt} 
                             className="mainImage"
-                        />
+                        /> : null}
                         { showimageinfo ? mediaInfo ? (
                             <div className="imageinfo">
                                 <p>size: {mediaInfo.size} format: {mediaInfo.format}</p>
@@ -297,7 +330,7 @@ export default function ImageGallery({
                         media.map((item, index) => {
                             return (
                                 <div className="noselect image" key={index} onClick={() => selectimage(index)}>
-                                    <img src={item.src} alt={item.alt}
+                                    <img src={item.smallsrc || item.src} alt={item.alt}
                                         draggable={false}
                                         className={`noselect thumbnail ${index === currentImage ? "selected" : ""}`}
                                     />

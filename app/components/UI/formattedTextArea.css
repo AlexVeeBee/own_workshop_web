@@ -1,12 +1,12 @@
 .formatted-textarea-container {
     padding: 0px 0px;
     border-radius: 8px;
-    background-color: #2C2C2C;
+    background-color: var(--card-bkg-color);
     border: 1px solid var(--border-color);
     color: #fff;
-    text-decoration: none;
     display: flex;
     flex-direction: column;
+    min-height: 100px;
 }
 .formatted-textarea-container textarea {
     width: 100%;
@@ -16,6 +16,22 @@
     color: #fff;
     text-decoration: none;
     resize: vertical;
+    min-height: 100px;
+}
+/* .formatted-textarea-container section {
+    height: 100%;
+    border-radius: 8px;
+    background-color: var(--btn-primary-color);
+    color: #fff;
+} */
+.formatted-textarea-container .formatted-textarea {
+    min-height: 80px;
+    color: #fff;
+}
+.formatted-textarea-container .formatted-textarea.monaco-editor {
+    min-height: 80px;
+    color: #fff;
+    --monaco-editor-font-size: 14px;
 }
 textarea:focus {
     outline: none;

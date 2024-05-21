@@ -62,6 +62,7 @@ export default function Index() {
                       id={item.id}
                       title={item.name}
                       description={item.description}
+                      tags={item.tags}
                       image={`http://localhost:8080/${item.thumb}`}
                       style={{ maxWidth: "512px", justifyContent: "flex-start" }}
                     />

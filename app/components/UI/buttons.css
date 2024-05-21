@@ -8,6 +8,25 @@
     cursor: pointer;
     text-decoration: none;
 }
+.btn-liminal {
+    --btn-hover-color: rgba(255,255,255,0.1);
+    --btn-hover-outline-color: #7a7a7a;
+    background-color: transparent;
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    border:none;
+    outline: 0px solid transparent;
+    transition: background-color 0.1s ease-in-out,
+                outline 0.1s ease-in-out
+    ;
+}
+.btn-liminal:hover, 
+.btn-liminal:focus-visible {
+    background-color: var(--btn-hover-color);
+    outline: 1px solid var(--btn-hover-outline-color);
+}
+
 .btn.btn-primary {
     padding: 8px 16px;
     border-radius: 8px;
@@ -31,6 +50,7 @@
 
 /* success */
 .btn.btn-success {
+    --btn-border-color: #189e35;
     padding: 8px 16px;
     border-radius: 8px;
     background-color: #28a745;

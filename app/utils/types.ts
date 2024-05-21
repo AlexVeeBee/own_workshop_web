@@ -10,6 +10,7 @@ interface IWorkshopItemLimits {
 
 export interface IWorkshopItemMedia {
     src: string;
+    smallSrc?: string;
     type: "image" | "video";
 }
 
@@ -23,12 +24,18 @@ export interface IWorkshopItem {
     media?: IWorkshopItemMedia[];
     authors: IUser[];
     owner: IUser;
+    latestVersion: string | null;
     limits?: string[];
+    nsfw: boolean;
     properties?: {
         [key in AssetProperties]?: string;
     }
 }
 
+export interface AssetVersion {
+    version: string,
+    date: Date,
+}
 export interface IUser {
     id: string | number;
     username: string;

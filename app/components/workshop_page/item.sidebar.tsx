@@ -24,7 +24,7 @@ interface minWorkshopItem {
      * Fallback if the list of authors is empty
      */
     owner?: IUser;
-    version: string;
+    version: string | null;
 }
 
 export default function WorkshopItemSidebar({

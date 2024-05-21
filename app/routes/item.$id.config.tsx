@@ -19,7 +19,7 @@ export const meta: MetaFunction = () => {
 };
   
 export default function ItemConfig() {
-    const i = useOutletContext<IWorkshopItem>();
+    const i = useOutletContext<{item: IWorkshopItem}>().item;
 
     const [disabled, setDisabled] = useState(false);
 
