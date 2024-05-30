@@ -10,17 +10,17 @@ const cookie = {
         let c = document.cookie;
         let ca = c.split(";");
         for (let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-                while (c.charAt(0) == " ") {
-                c = c.substring(1);
+            let cookie = ca[i];
+            while (cookie.charAt(0) == " ") {
+                cookie = cookie.substring(1);
             }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
+            if (cookie.indexOf(name + "=") == 0) {
+                return cookie.substring(name.length + 1, cookie.length);
             }
         }
         return "";
     },
-    delete(name: string) {
+    remove(name: string) {
         document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     }
 }

@@ -41,6 +41,7 @@ export interface IUser {
     username: string;
     pfp: string;
     banner?: string | null;
+    nsfw: boolean;
 }
 
 export interface WorkshopInfo {

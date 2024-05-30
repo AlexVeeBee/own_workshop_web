@@ -1,7 +1,7 @@
 import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useOutletContext, useRouteError } from "@remix-run/react";
 import { Suspense, useEffect, useState } from "react";
-import Card from "~/components/card";
+import Card from "~/components/UI/card";
 import { AssetVersion, IWorkshopItem, IWorkshopItemMedia } from "~/utils/types";
 
 import { useSidebar } from "~/components/contexts/sidebar/sidebarProvider";
@@ -13,6 +13,8 @@ import { useModal } from "~/components/contexts/modal/modalProvider";
 import DownloadAsModal from "~/components/UI/Modals/downloadas";
 import Button, { Buttons } from "~/components/UI/buttons";
 import { useAppSelector } from "~/utils/hooks";
+import { useUser } from "~/components/contexts/user/userProvider";
+import { serverHost } from "~/utils/vars";
 
 export const meta: MetaFunction = () => {
     return [
@@ -23,7 +25,7 @@ export const meta: MetaFunction = () => {
   
 
 // export const loader = async ({ params }: LoaderFunctionArgs) => {
-//     const f = await fetch(`http://localhost:8080/api/workshop/get/${params.id}`);
+//     const f = await fetch(`${serverHost}/api/workshop/get/${params.id}`);
 //     if (!f.ok) {
 //         throw new Error("Item not found");
 //     }
@@ -35,6 +37,7 @@ export default function Item() {
     const store = useAppSelector(state => state.user);
     const sidebar = useSidebar()
     const modal = useModal();
+    const user = useUser();
     const i = useOutletContext<{
         item: IWorkshopItem,
         versions: AssetVersion[],
@@ -56,7 +59,10 @@ export default function Item() {
 
     const showAnyway = () => {
         if (store.id) {
-            setNSFW_warning(false);
+            user.verifyLogin().then((data) => {
+                if (!data) { return; }
+                setNSFW_warning(false);
+            });
             return;
         }
         LoginToViewModal();
@@ -70,7 +76,7 @@ export default function Item() {
                 padding: "20px",
                 width: "100%"
             },
-            content: <Card
+            content: () => <Card
                 cardStyle={{padding: "20px", width: "100%"}}
                 style={{flexDirection: "column", gap: "10px"}}
             >
@@ -91,7 +97,7 @@ export default function Item() {
             style: {
                 width: "600px"
             },
-            content: <DownloadAsModal
+            content: () => <DownloadAsModal
                 downloadAvailable={i.versionsAvailable}
                 version="latest"
                 itemid={i.item.id}
@@ -120,8 +126,6 @@ export default function Item() {
                                     }}
                                     onClick={() => {
                                         showAnyway();
-                                        // LoginToViewModal();
-                                        // setNSFW_warning(false);
                                     }}
                                 >Show anyway</Buttons.LiminalButton>
                             </div>
@@ -132,15 +136,15 @@ export default function Item() {
                         images={
                             i.item.media && i.item.media.length > 0 ? i.item.media.map(image => {
                                 return {
-                                    src: `http://localhost:8080/${image.src}`,
-                                    smallsrc: image?.smallSrc && `http://localhost:8080/${image.smallSrc}`,
+                                    src: `${serverHost}/${image.src}`,
+                                    smallsrc: image?.smallSrc && `${serverHost}/${image.smallSrc}`,
                                     type: image.type,
                                     alt: "Workshop image",
                                 }
                             }
                             ) : [
                                 {
-                                    src: `http://localhost:8080/${i.item.thumb}`,
+                                    src: `${serverHost}/${i.item.thumb}`,
                                     type: "image",
                                     alt: "Workshop Thumbnail",
                                     shortDescription: "Item Thumbnail image",

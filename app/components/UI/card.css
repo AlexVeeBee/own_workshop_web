@@ -1,0 +1,20 @@
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: var(--card-bkg-color);
+    border: 1px solid var(--border-color);
+    width: 100%;
+}
+.card > .header {
+    width: 100%;
+}
+.card > .content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}

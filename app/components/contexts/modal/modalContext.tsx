@@ -6,7 +6,7 @@ export interface OpenModalProps {
     style?: React.CSSProperties;
     hideCloseButton?: boolean;
     contentStyle?: React.CSSProperties;
-    content: React.ReactNode;
+    content: (id: string, forceClose: () => void ) => React.ReactNode;
     /**
      * Whether the modal should be open or not
      * 

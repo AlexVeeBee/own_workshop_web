@@ -1,5 +1,5 @@
 import "../style/index.css";
-import Card from "./card";
+import Card from "./UI/card";
 
 function getErrorCode(status: string | number) {
     if (typeof status === "number") {

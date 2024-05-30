@@ -1,13 +1,14 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import "../style/index.css";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import WorkshopItem from "~/components/workshop_page/workshop.item";
 import { WorkshopHeader } from "~/components/workshop_page/WorkshopHeader";
 import { IWorkshopItem, WorkshopInfo } from "~/utils/types";
 import WorkshopItemSidebar from "~/components/workshop_page/item.sidebar";
 import SidebarFilters from "~/components/homepage/sidebar.filters";
-import Card from "~/components/card";
+import Card from "~/components/UI/card";
 import InfoCard from "~/components/UI/infoCard";
+import { serverHost } from "~/utils/vars";
 
 export const meta: MetaFunction = () => {
   return [
@@ -17,11 +18,11 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const i = await fetch(`http://localhost:8080/api/info/get`);
+  const i = await fetch(`${serverHost}/api/info/get`);
   if (!i.ok) {
       throw new Error("Unable to fetch workshop info");
   }
-  const w = await fetch(`http://localhost:8080/api/workshop`);
+  const w = await fetch(`${serverHost}/api/workshop`);
   if (!w.ok) {
       throw new Error("No items found");
   }
@@ -41,15 +42,25 @@ export default function Index() {
             textAlignment="right"
             title="Workshop"
             description="This is a workshop"
-            image={`http://localhost:8080/${info.headerimage}`}
+            image={`${serverHost}/${info.headerimage}`}
           />
         </div>
         <div className="center flex column mainbkg" style={{padding: "20px"}}>
           <div className="flex" style={{ width: "100%", gap: "20px" }}>
             <Card
-              style={{padding: "0"}}
+              style={{flexDirection:"column", padding: "0"}}
               cardStyle={{padding: "0", width: "100%"}}
             >
+              <div className="flex">
+                <Link to="/users">
+                  <InfoCard
+                    status="info"
+                  >
+                    <h1>Users</h1>
+                    <p>View all users</p>
+                  </InfoCard>
+                </Link>
+              </div>
               <div 
                 className="wrap align-top justify-center"
                 style={{padding: "12px", gap:"12px",  display: "grid", width: "100%", justifyContent: "center", 
@@ -63,7 +74,7 @@ export default function Index() {
                       title={item.name}
                       description={item.description}
                       tags={item.tags}
-                      image={`http://localhost:8080/${item.thumb}`}
+                      image={`${serverHost}/${item.thumb}`}
                       style={{ maxWidth: "512px", justifyContent: "flex-start" }}
                     />
                   ))

@@ -1,6 +1,7 @@
 import LoadingCircle from "~/components/LoadingCircle";
 import { useModal } from "~/components/contexts/modal/modalProvider";
 import Icon from "~/components/icons";
+import { serverHost } from "~/utils/vars";
 
 interface DownloadAsModalProps {
     downloadAvailable: boolean;
@@ -36,7 +37,7 @@ export default function DownloadAsModal({
             <>
                 <h2>Download {!version ? "latest" : version} version</h2>
                 <div className="flex column" style={{ gap: "5px" }}>
-                    <a className="flex align-center btn btn-success" href={`http://localhost:8080/api/workshop/download/${itemid}/zip${version ? `/${version}` : ""}`} target="_blank" rel="noreferrer">
+                    <a className="flex align-center btn btn-success" href={`${serverHost}/api/workshop/download/${itemid}/zip${version ? `/${version}` : ""}`} target="_blank" rel="noreferrer">
                         <Icon name="download" />
                         Download
                     </a>

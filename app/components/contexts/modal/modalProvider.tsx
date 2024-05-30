@@ -18,10 +18,9 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const closeModal = (id: string) => {
-        // setModals((prev) => {
-        //     return prev.filter((modal) => modal.id !== id);
-        // });
         const index = modals.findIndex((modal) => modal.id === id);
+        console.log("closing modal", id, index)
+        console.log(modals)
         if (index === -1) return;
         const modal = modals[index];
         modal.open = false;
@@ -52,7 +51,7 @@ export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
                     contentStyle={modal.contentStyle}
                     show={modal.open ?? true}
                 >
-                    {modal.content}
+                    {modal.content(modal.id, () => {closeModal(modal.id)})}
                 </Modal>
             })}
         </div>

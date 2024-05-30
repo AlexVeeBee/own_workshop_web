@@ -1,7 +1,6 @@
 import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData, useOutletContext, useRouteError } from "@remix-run/react";
 import { Suspense, useEffect, useState } from "react";
-import Card from "~/components/card";
 import { AssetVersion, IWorkshopItem } from "~/utils/types";
 
 import { useSidebar } from "~/components/contexts/sidebar/sidebarProvider";

@@ -1,10 +1,11 @@
 import { useLoaderData } from "@remix-run/react";
-import Card from "~/components/card";
+import Card from "~/components/UI/card";
 import { WorkshopHeader } from "~/components/workshop_page/WorkshopHeader";
 import { WorkshopInfo } from "~/utils/types";
+import { serverHost } from "~/utils/vars";
 
 export async function loader() {
-    const i = await fetch(`http://localhost:8080/api/info/get`);
+    const i = await fetch(`${serverHost}/api/info/get`);
     if (!i.ok) {
         throw new Error("Unable to fetch workshop info");
     }
@@ -24,7 +25,7 @@ export default function Login() {
                     textAlignment="right"
                     title={i.title}
                     description={i.description}
-                    image={`http://localhost:8080/${i.headerimage}`}
+                    image={`${serverHost}/${i.headerimage}`}
                 />
             </div>
             <div className="center flex column mainbkg">

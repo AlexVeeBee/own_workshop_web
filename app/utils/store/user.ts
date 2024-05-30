@@ -2,10 +2,11 @@
 import { useDispatch } from "react-redux";
 import { IUser } from "../types";
 import { Dispatch, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { serverHost } from "../vars";
 
 const getUser = async (id: string | number) => {
     id = id.toString();
-    const f = await fetch(`http://localhost:8080/api/user/get/${id}`);
+    const f = await fetch(`${serverHost}/api/user/get/${id}`);
     if (!f.ok) {
         throw new Error("User not found");
     }
@@ -13,7 +14,7 @@ const getUser = async (id: string | number) => {
 }
 
 const userLogin = async (username: string, password: string) => {
-    const f = await fetch(`http://localhost:8080/api/user/login`, {
+    const f = await fetch(`${serverHost}/api/user/login`, {
         method: "POST",
         body: JSON.stringify({
             username,
@@ -48,6 +49,7 @@ const initialState: IUser & {
     username: "",
     pfp: "",
     banner: "",
+    nsfw: false,
 }
 
 export const user = createSlice({

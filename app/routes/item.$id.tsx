@@ -1,7 +1,6 @@
 import { LoaderFunctionArgs, MetaFunction, redirect } from "@remix-run/node";
 import { Outlet, useLoaderData, useLocation, useOutlet, useRouteError } from "@remix-run/react";
 import { Suspense, useEffect, useState } from "react";
-import Card from "~/components/card";
 import { AssetVersion, IWorkshopItem } from "~/utils/types";
 
 import "~/style/workshop-page.css";
@@ -12,6 +11,7 @@ import ImageGallery from "~/components/imageGallery";
 import InfoCard from "~/components/UI/infoCard";
 import TabBar from "~/components/UI/tabBar";
 import Button, { Buttons } from "~/components/UI/buttons";
+import { serverHost } from "~/utils/vars";
 
 export const meta: MetaFunction = () => {
     return [
@@ -30,11 +30,11 @@ const pages = [
 ]
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-    const f = await fetch(`http://localhost:8080/api/workshop/get/${params.id}`);
+    const f = await fetch(`${serverHost}/api/workshop/get/${params.id}`);
     if (!f.ok) {
         throw new Error("Item not found");
     }
-    const versions = await fetch(`http://localhost:8080/api/workshop/get/${params.id}/versions`);
+    const versions = await fetch(`${serverHost}/api/workshop/get/${params.id}/versions`);
     if (!versions.ok) {
         console.warn("[WARN]:Versions not found");
     }
@@ -103,7 +103,7 @@ export default function Item() {
 
     return (
         <main id="workshop-item-container">
-            {i.item.properties?.CSS ? (<link rel="stylesheet" href={`http://localhost:8080/${i.item.properties.CSS}`} />) : null}
+            {i.item.properties?.CSS ? (<link rel="stylesheet" href={`${serverHost}/${i.item.properties.CSS}`} />) : null}
             <div className="center" style={{margin: "0 24px"}}>
                 <div style={{width: "100%", margin: "24px 0"}} className="margin">
                     <h1>Someonws Workshop</h1>

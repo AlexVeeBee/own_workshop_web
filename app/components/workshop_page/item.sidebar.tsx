@@ -1,5 +1,5 @@
-import { IUser, IWorkshopItem, imageFitOptions } from "~/utils/types";
-import Card from "../card";
+import { IUser, imageFitOptions } from "~/utils/types";
+import Card from "../UI/card";
 import User from "../user/user";
 import "./item.sidebar.css"
 import { useModal } from "../contexts/modal/modalProvider";
@@ -9,6 +9,7 @@ import { ActionBar } from "../UI/IconsActionBar";
 import { useState } from "react";
 import ThumbnailPreviewModal from "./item.thumbnail_preview";
 import InfoCard from "../UI/infoCard";
+import { serverHost } from "~/utils/vars";
 
 interface WorkshopItemSidebar {
     style?: React.CSSProperties;
@@ -50,13 +51,13 @@ export default function WorkshopItemSidebar({
             },
             id: "workshop-thumb-modal",
             title: "Thumbnail image",
-            content: (
+            content: () => (
                 <>
-                <ThumbnailPreviewModal image={`http://localhost:8080/${thumb}`} />
+                <ThumbnailPreviewModal image={`${serverHost}/${thumb}`} />
                 {/* <ImageGallery 
                     style={{width: "100%", height: "100%"}}
                     overrideAspectRatio={"1/1"}
-                    images={[{image: `http://localhost:8080/${thumb}`, alt: "Workshop preview image"}]}
+                    images={[{image: `${serverHost}/${thumb}`, alt: "Workshop preview image"}]}
                     currImage={0}
                     disableModal={true}
                     imagefit={fitoptions}
@@ -73,7 +74,7 @@ export default function WorkshopItemSidebar({
                 gap: "20px",
             }
         }>
-            { thumb && ( <img src={`http://localhost:8080/${thumb}`} alt="Workshop preview image" className="thumb"
+            { thumb && ( <img src={`${serverHost}/${thumb}`} alt="Workshop preview image" className="thumb"
                 onClick={openTumbModal}
             /> )}
             <Card style={{display: "flex", flexDirection: "column", gap: "4px"}}>

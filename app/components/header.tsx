@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from "~/utils/hooks";
 import LoadingCircle from "./LoadingCircle";
 import { useUser } from "./contexts/user/userProvider";
 import { useModal } from "./contexts/modal/modalProvider";
-import Card from "./card";
+import Card from "./UI/card";
 
 const LoginModal = ({
     onLogin,
@@ -51,6 +51,7 @@ const LoginModal = ({
                                                 username: data.username,
                                                 pfp: data.pfp,
                                                 banner: data.banner,
+                                                nsfw: data.nsfw,
                                             });
                                         }
                                     }).catch((e) => {
@@ -60,7 +61,7 @@ const LoginModal = ({
                                             contentStyle: {
                                                 padding: "20px",
                                             },
-                                            content: (
+                                            content: () => (
                                                 <Card>
                                                     <div>
                                                         <h1>Login failed</h1>
@@ -95,7 +96,15 @@ const LoginModal = ({
             }
         </>
     )
+}
 
+const UserHeaderModal = ({ user }: { user: IUser }) => {
+
+
+    return (<div>
+        <h1>{user.username}</h1>
+        <p>{user.id}</p>
+    </div>)
 }
 
 export function AppHeader({
@@ -103,19 +112,24 @@ export function AppHeader({
 }: {
     user: IUser
 }) {
-    const [loggingIn, setLoggingIn] = useState(true)
+    const [loggingIn, setLoggingIn] = useState(false)
+    const [showLoginButton, setShowLoginButton] = useState(false)
     const store = useAppSelector(state => state.user);
     const dispatch = useAppDispatch();
     const useUserProvider = useUser();
     const modal = useModal();
     const [userData, setUserData] = useState<IUser | null>(null);
 
+    
     useEffect(() => {
-        if (loggingIn) {
-            fetchUserLogin("test", "test").then(() => {
-                setLoggingIn(false);
-            })
-        }
+        setLoggingIn(true);
+        useUserProvider.loginViaCookie().then((data) => {
+            setLoggingIn(false);
+            setUserData(data);
+        }).catch(() => {
+            setLoggingIn(false);
+            setShowLoginButton(true);
+        });
     }, [])
 
     const loginModal = () => {
@@ -125,10 +139,11 @@ export function AppHeader({
             contentStyle: {
                 padding: "20px",
             },
-            content: (
+            content: () => (
                 <LoginModal
                     onLogin={(user) => {
                         setUserData(user);
+                        setShowLoginButton(false);
                     }}
                 />
             ),
@@ -136,7 +151,12 @@ export function AppHeader({
     }
 
     return <>
-        <header>
+        <header
+            style={{
+                maxHeight: "200px",
+                overflow: "hidden",
+            }}
+        >
             <div className={"center"}>
                 <div className="left">
                     <Link to="/" className="link">
@@ -145,7 +165,7 @@ export function AppHeader({
                 </div>
                 <div className="right flex">
                     {
-                        !store.id && 
+                        showLoginButton && 
                             <Buttons.LiminalButton
                                 style={{
                                     padding: "10px 20px",
@@ -153,29 +173,6 @@ export function AppHeader({
                                 }}
                                 onClick={() => {
                                     loginModal();
-                                    // setLoggingIn(true);
-                                    // useUserProvider.login("test", "test").then((d) => {
-                                    //     setLoggingIn(false);
-                                    //     setUserData(d);
-                                    // }).catch((e) => {
-                                    //     modal.openModal({
-                                    //         id: "login-failed",
-                                    //         title: "Login failed",
-                                    //         contentStyle: {
-                                    //             padding: "20px",
-                                    //         },
-                                    //         content: (
-                                    //             <Card>
-                                    //                 <div>
-                                    //                     <h1>Login failed</h1>
-                                    //                     <p>{e.message}</p>
-                                    //                 </div>
-                                    //             </Card>
-                                    //         ),
-                                    //     });
-
-                                    //     setLoggingIn(false);
-                                    // });
                                 }}
                             >
                                 Login
@@ -192,9 +189,38 @@ export function AppHeader({
                                 pfp: userData.pfp,
                                 id: userData.id,
                                 username: userData.username,
+                                nsfw: userData.nsfw,
                             }}
-                            showUsername={false} 
-                            showUserModal={true}
+                            showUsername={false}
+                            onClick={() => {
+                                modal.openModal({
+                                    id: "user-modal",
+                                    title: userData.username,
+                                    content: (id) => (
+                                        <>
+                                            <UserHeaderModal user={userData} />
+                                            <div className="flex justify-center" style={{marginTop: "20px"}}>
+                                                <a className="btn" href={`/user/${userData.id}`}>View workshop</a>
+                                                <Buttons.Button
+                                                    btnType="DANGER"
+                                                    onClick={() => {
+                                                        useUserProvider.logout().then(() => {
+                                                            setUserData(null);
+                                                            setShowLoginButton(true);
+                                                            modal.closeModal(id);
+                                                        });
+                                                    }}
+                                                >Logout</Buttons.Button>
+                                            </div>
+                                        </>
+                                    ),
+                                    style: {
+                                        width: "100%",
+                                        height: "100%",
+                                        maxWidth: "var(--page-width)",
+                                    }
+                                })
+                            }}
                         />
                     }
                 </div>

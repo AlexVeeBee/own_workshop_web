@@ -5,13 +5,14 @@ import { IUser } from "~/utils/types";
 import { useAppDispatch } from "~/utils/hooks";
 import { setUser } from "~/utils/store/user";
 import cookie from "~/utils/cookie";
+import { serverHost } from "~/utils/vars";
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
 
   const getUser = async (id: string | number): Promise<IUser> => {
     id = id.toString();
-    const f = await fetch(`http://localhost:8080/api/user/get/${id}`);
+    const f = await fetch(`${serverHost}/api/user/get/${id}`);
     if (!f.ok) {
       throw new Error("User not found");
     }
@@ -19,7 +20,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = async (username: string, password: string): Promise<IUser> => {
-    const f = await fetch(`http://localhost:8080/api/user/login`, {
+    const f = await fetch(`${serverHost}/api/user/login`, {
       method: "POST",
       body: JSON.stringify({
         username,
@@ -33,11 +34,57 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     dispatch(setUser({
       id: json.id,
       username: json.username,
-      pfp: json.pfp,
+      pfp: json.pfp, 
       banner: json.banner,
+      nsfw: json.nsfw || false,
     }));
     // set cookie
-    cookie.set("login", json.token, 7);
+    cookie.set("login", json.token, 1);
+    return json;
+  }
+
+  const logout = async () => {
+    const f = await fetch(`${serverHost}/api/user/logout`);
+    if (!f.ok) {
+      throw new Error("Failed to logout");
+    }
+    dispatch(setUser({
+      id: "",
+      username: "",
+      pfp: "",
+      banner: "",
+      nsfw: false,
+    }));
+    cookie.remove("login");
+  }
+
+  const verifyLogin = async (): Promise<boolean> => {
+    const token = cookie.get("login");
+    if (!token) {
+      throw new Error("No login cookie");
+    }
+    const f = await fetch(`${serverHost}/api/user/login/${token}`);
+    console.log("Verify login", f.ok)
+    return f.ok;
+  }
+
+  const loginViaCookie = async (): Promise<IUser> => {
+    const token = cookie.get("login");
+    if (!token) {
+      throw new Error("No login cookie");
+    }
+    const f = await fetch(`${serverHost}/api/user/login/${token}?pulldata=true`);
+    if (!f.ok) {
+      throw new Error("User not found: " + await f.text());
+    }
+    const json = await f.json();
+    dispatch(setUser({
+      id: json.id,
+      username: json.username,
+      pfp: json.pfp,
+      banner: json.banner,
+      nsfw: json.nsfw || false,
+    }));
     return json;
   }
 
@@ -45,6 +92,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     <UserContext.Provider value={{
       getUser: getUser,
       login: login,
+      logout: logout,
+      loginViaCookie: loginViaCookie,
+      verifyLogin: verifyLogin,
     }}>
         {children}
     </UserContext.Provider>

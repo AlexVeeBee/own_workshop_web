@@ -1,4 +1,4 @@
-import { Link, useLoaderData, useParams, useRouteError } from "@remix-run/react";
+import { Link, Outlet, useLoaderData, useParams, useRouteError } from "@remix-run/react";
 import { useState } from "react";
 import { WorkshopHeader } from "~/components/workshop_page/WorkshopHeader";
 import { useUser } from "~/components/contexts/user/userProvider";
@@ -8,10 +8,16 @@ import { UserInfoCard } from "~/components/user/userInfoCard";
 import Button, { Buttons } from "~/components/UI/buttons";
 import Icon from "~/components/icons";
 import Markdown from "~/components/UI/Markdown";
-import Card from "~/components/card";
+import Card from "~/components/UI/card";
+import TabBar from "~/components/UI/tabBar";
+import InfoCard from "~/components/UI/infoCard";
+import { useAppSelector } from "~/utils/hooks";
+import { useModal } from "~/components/contexts/modal/modalProvider";
+import UploadModal from "~/components/uploads/modal";
+import { serverHost } from "~/utils/vars";
 
 export async function loader({ params }: { params: { id: string } }) {
-    const f = await fetch(`http://localhost:8080/api/user/get/${params.id}`);
+    const f = await fetch(`${serverHost}/api/user/get/${params.id}`);
     if (!f.ok) {
         return { status: f.status };
     }
@@ -29,7 +35,24 @@ const SmallSection = ({ children, title }: { children: React.ReactNode, title: s
 
 export default function UserPage() {
     const user = useLoaderData<IUser | { status: number }>()
+    const userStore = useAppSelector(state => state.user);
+    const modal = useModal();
 
+    const upload = () => {
+        modal.openModal({
+            id: "upload-assets",
+            title: "Upload",
+            style: {
+                width: "100%",
+                maxWidth: "500px",
+            },
+            contentStyle: {
+                padding: "20px",
+            },
+            content: (id) => <UploadModal modalid="upload-assets"/>,
+        })
+    }
+    
     if ("status" in user) {
         return <>
             <main>
@@ -39,6 +62,8 @@ export default function UserPage() {
             </main>
         </>
     }
+
+    const [nsfw, setNsfw] = useState<boolean>(user.nsfw);
 
     return (
         <main>
@@ -50,80 +75,139 @@ export default function UserPage() {
                     <span>Back</span>
                 </Link>
             </div>
-            <div className="center flex column"
-                style={{
-                    position: "relative",
-                }}
-            >
-                <UserInfoCard 
-                    user={user} 
-                    className="fillwidth"
-                />
-            </div>
-            <div className="center mainbkg">
-                <div className="center flex row fillwidth v-mobile"
-                    id="user-content"
-                    style={{
-                        gap: "20px",
-                        padding: "20px",
-                    }}
-                >
-                    <div className="left"
+            {
+                !nsfw ? (
+                    <>
+                    <div className="center flex column"
                         style={{
-                            width: "25%"
+                            position: "relative",
                         }}
                     >
-                        <div className="flex column" style={{ gap: "10px", }}>
-                            <Buttons.Button
-                                style={{
-                                    padding: "10px 20px",
-                                    borderRadius: "5px",
-                                    display: "flex",
-                                    gap: "10px",
-                                    alignItems: "center",
-                                }}
-                                onClick={() => {}}
-                            >
-                                <Icon
-                                    name="upload"
-                                />
-                                <span>Upload</span>
-                            </Buttons.Button>
-                            <SmallSection
-                                title="Stats"
-                            >
-                                <div>
-                                    <p>Items: 0</p>
-                                    <p>Followers: 0</p>
-                                    <p>Following: 0</p>
-                                </div>
-                            </SmallSection>
-                        </div>
+                            {
+                            user.nsfw && 
+                                <InfoCard
+                                    status="error"
+                                >
+                                    <div className="flex align-center"
+                                        style={{
+                                            gap: "var(--global-page-gap-2)",
+                                        }}
+                                    >
+                                        <Icon name="alert" />
+                                        <p>NSFW Content</p>
+                                    </div>
+                                </InfoCard>
+                        }
+                        <UserInfoCard 
+                            user={user} 
+                            className="fillwidth"
+                        />
                     </div>
-                    <div className="right"
-                        style={{
-                            width: "100%"
-                        }}
-                    >
-                        <Card>
-                            <Markdown
+                    <div className="center mainbkg">
+                        <div className="center flex row fillwidth v-mobile"
+                            id="user-content"
                             style={{
-                                width: "100%"
+                                gap: "20px",
+                                padding: "20px",
                             }}
-                            markdown={`
-# ${user.username}'s Workshops
-## Here are the workshops created by ${user.username}:
-### Hello
-#### Ho
-Here are the workshops created by ${user.username}:
+                        >
+                            <div className="left"
+                                style={{
+                                    flexGrow: 1,
+                                }}
+                            >
+                                <div className="flex column" style={{ gap: "10px", }}>
+
+                                    { userStore.id === user.id && (
+                                        <Buttons.Button
+                                            style={{
+                                                padding: "10px 20px",
+                                                borderRadius: "5px",
+                                                display: "flex",
+                                                gap: "10px",
+                                                alignItems: "center",
+                                            }}
+                                            onClick={() => {
+                                                upload();
+                                            }}
+                                        >
+                                            <Icon
+                                                name="upload"
+                                            />
+                                            <span>Upload</span>
+                                        </Buttons.Button>
+                                    )}
+
+                                    <SmallSection
+                                        title="Stats"
+                                    >
+                                        <div>
+                                            <p>Items: 0</p>
+                                            <p>Followers: 0</p>
+                                            <p>Following: 0</p>
+                                        </div>
+                                    </SmallSection>
+                                </div>
+                            </div>
+                            <div className="right flex column"
+                                style={{
+                                    flexBasis: "75%",
+                                    gap: "20px",
+                                }}
+                            >
+                                <Card>
+                                    <Markdown
+                                    style={{
+                                        width: "100%"
+                                    }}
+                                    markdown={`# ${user.username}'s Workshop Items
 `}
-                            />
-                        </Card>
+                                    />
+                                </Card>
+                                <div className="userContent">
+                                    <TabBar
+                                        onTabChange={(tab) => {}}
+                                        tabs={[
+                                            { title: "Home", link: "./" },
+                                            { title: "Debug", link: "./debug" },
+                                            // { title: "Comments", link: "./comments" },
+                                            // { title: "Followers", link: "./followers" },
+                                            // { title: "Following", link: "./following" },
+                                        ]}
+                                    />
+                                    <Outlet
+                                        context={{
+                                            user
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        {/* <div className="flex align-center" style={{gap: "10px"}}>
+                        </div> */}
                     </div>
-                </div>
-                {/* <div className="flex align-center" style={{gap: "10px"}}>
-                </div> */}
-            </div>
+                    </>
+                ) : (
+                    <div className="center flex column">
+                        <InfoCard
+                            status="error"
+                        >
+                            <div className="flex align-center"
+                                style={{gap: "var(--global-page-gap-2)",}}
+                            >
+                                <Icon name="alert" size={64} />
+                                <h1>NSFW Content</h1>
+                            </div>
+                            <p>This user has NSFW content. Are you sure you want to view it?</p>
+                            <Button
+                                onClick={() => setNsfw(false)}
+                            >
+                                Yes
+                            </Button>
+                        </InfoCard>
+                    </div>
+                )
+            }
         </main>
     )
 }

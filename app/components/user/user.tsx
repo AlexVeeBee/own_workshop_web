@@ -6,6 +6,9 @@ import UserPFPIcon from "./user.pfpicon"
 import { useModal } from "../contexts/modal/modalProvider"
 import { UserInfoCard } from "./userInfoCard"
 import "./user.css"
+import InfoCard from "../UI/infoCard"
+import Icon from "../icons"
+import { serverHost } from "~/utils/vars"
 
 interface ComponentUser {
     id?: string;
@@ -30,7 +33,7 @@ export default function User({
     const [verified, setVerified] = useState(true)
 
     const verifyUser = async (id: string | number) => {
-        const f = await fetch(`http://localhost:8080/api/user/verify/${id}`)
+        const f = await fetch(`${serverHost}/api/user/verify/${id}`)
         return await f.json()
     }
 
@@ -65,9 +68,27 @@ export default function User({
         modal.openModal({
             id: "user-modal",
             title: `${user?.username || "..."}`,
-            content: verified ? (
+            content: () => verified ? (
                 <>
-                    <UserInfoCard user={user} />
+                    {
+                        !user?.nsfw ? (
+                            <UserInfoCard user={user} />
+                        ) : (
+                            <div className="flex align-center column" style={{gap: "10px"}}>
+                                <InfoCard
+                                    status="error"
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "var(--global-page-gap-2)",
+                                    }}
+                                >
+                                    <Icon name="alert" />
+                                    <p>This user has been marked as NSFW</p>
+                                </InfoCard>
+                            </div>
+                        )
+                    }
                     <div className="flex justify-center" style={{marginTop: "20px"}}>
                         <a 
                             className="btn" 
@@ -104,7 +125,7 @@ export default function User({
             }
             {/* <h1>{id}</h1> */}
             {
-                user?.pfp && <UserPFPIcon src={`http://localhost:8080/${user?.pfp}`} alt="User avatar" />
+                user?.pfp && <UserPFPIcon src={`${serverHost}/${user?.pfp}`} alt="User avatar" />
             }
             {
                 showUsername && <p>{user?.username || "..."}</p>

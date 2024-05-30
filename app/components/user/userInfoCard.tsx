@@ -3,6 +3,8 @@ import UserHeader from "./UserHeader"
 import { WorkshopHeader } from "../workshop_page/WorkshopHeader"
 import { useEffect, useState } from "react"
 import InfoCard from "../UI/infoCard"
+import Button, { Buttons } from "../UI/buttons"
+import { serverHost } from "~/utils/vars"
 
 interface userInfoCard {
     user: IUser | null
@@ -16,12 +18,12 @@ export const UserInfoCard = ({
     style
 }: userInfoCard) => {
     const verifyUser = async (id: string | number) => {
-        const f = await fetch(`http://localhost:8080/api/user/verify/${id}`)
+        const f = await fetch(`${serverHost}/api/user/verify/${id}`)
         return await f.json()
     }
 
     const [existsUser, setExistsUser] = useState(false)
-    const [userdata, setUserData] = useState<IUser | null>(null)
+    const [userdata, setUserData] = useState<IUser | null>(user || null)
     const [veryfying, setVeryfying] = useState(true)
 
     if (!user) return (
@@ -69,14 +71,33 @@ export const UserInfoCard = ({
                 textAlignment="right"
                 title={`${userdata?.username}'s profile`}
                 description=""
-                image={userdata?.banner ? `http://localhost:8080/${user.banner}` : ""}
+                image={userdata?.banner ? `${serverHost}/${user.banner}` : ""}
             />
             <UserHeader
                 user={{
                     id: userdata?.id,
                     username: userdata?.username,
-                    pfp: `http://localhost:8080/${userdata.pfp}`
-                }} />
+                    pfp: `${serverHost}/${userdata.pfp}`,
+                    banner: `${serverHost}/${userdata.banner}`,
+                    nsfw: userdata?.nsfw || false,
+                }}
+                suffix={(
+                    <div className="flex align-center"
+                        style={{
+                            marginRight: "20px"
+                        }}
+                    >
+                        <Button
+                            onClick={() => {
+                                console.log("Followed user")
+                            }}
+                            btnType={"PRIMARY"}
+                        >
+                            Follow
+                        </Button>
+                    </div>
+                )}
+            />
         </div>
     )
 }

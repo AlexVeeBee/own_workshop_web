@@ -1,7 +1,7 @@
 import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useLoaderData, useOutletContext, useRouteError } from "@remix-run/react";
 import { Suspense, useEffect, useState } from "react";
-import Card from "~/components/card";
+import Card from "~/components/UI/card";
 import { AssetVersion, IWorkshopItem } from "~/utils/types";
 
 import { useSidebar } from "~/components/contexts/sidebar/sidebarProvider";
@@ -9,6 +9,7 @@ import WorkshopItemSidebar from "~/components/workshop_page/item.sidebar";
 import Icon from "~/components/icons";
 import InfoCard from "~/components/UI/infoCard";
 import Button, { Buttons } from "~/components/UI/buttons";
+import { serverHost } from "~/utils/vars";
 
 export const meta: MetaFunction = () => {
     return [
@@ -29,7 +30,7 @@ interface IVersionData {
 
 // export async function loader({ params }: LoaderFunctionArgs) {
 //     // /api/workshop/get/:id/versions
-//     const f = await fetch(`http://localhost:8080/api/workshop/get/${params.id}/versions`)
+//     const f = await fetch(`${serverHost}/api/workshop/get/${params.id}/versions`)
 //     if (!f.ok) {
 //         throw new Error("Item not found");
 //     }
@@ -37,8 +38,7 @@ interface IVersionData {
 // }
 
 const Version = ({ id, version, isLatest }: IVersionItem) => {
-    // http://localhost:8080/api/workshop/download/5/zip
-    const downloadlink = `http://localhost:8080/api/workshop/download/${id}/zip/${version}`;
+    const downloadlink = `${serverHost}/api/workshop/download/${id}/zip/${version}`;
     return (
         <Card className="version-item">
             <div className="flex column fillwidth">

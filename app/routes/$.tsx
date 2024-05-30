@@ -1,4 +1,4 @@
-import Card from "~/components/card";
+import Card from "~/components/UI/card";
 
 export default function Route() {
     return (

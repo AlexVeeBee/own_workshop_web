@@ -1,9 +1,10 @@
 // instance
 
 import { Dispatch, createSlice } from "@reduxjs/toolkit";
+import { serverHost } from "../vars";
 
 const getInstance = async () => {
-    const f = await fetch(`http://localhost:8080/api/info/get`);
+    const f = await fetch(`${serverHost}/api/info/get`);
     if (!f.ok) {
         throw new Error("404");
     }

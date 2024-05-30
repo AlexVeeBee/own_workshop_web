@@ -19,7 +19,7 @@
 
 .user-header .avatar {
     height: auto;
-    width: -webkit-fill-available;
+    width: 100%;
     display: flex;
     position: relative;
     align-items: center;
@@ -28,7 +28,7 @@
 }
 .user-header .avatar .avatar-main {
     height: auto;
-    width: -webkit-fill-available;
+    width: 100%;
     display: flex;
     position: relative;
     align-items: center;

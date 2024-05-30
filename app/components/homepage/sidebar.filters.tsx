@@ -1,4 +1,4 @@
-import Card from "../card";
+import Card from "../UI/card";
 
 export default function SidebarFilters() {
     return (

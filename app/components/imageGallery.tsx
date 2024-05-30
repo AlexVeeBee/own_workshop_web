@@ -241,7 +241,7 @@ export default function ImageGallery({
             style: { width: "90dvw", height: "100vh"  },
             contentStyle: {},
             id: "imageGallery",
-            content: (
+            content: () => (
                 <ImageGallery
                     imageSwitcher="arrows"
                     imagefit="contain"

@@ -17,9 +17,10 @@ import Footer from "./components/footer";
 import { ModalProvider } from "./components/contexts/modal/modalProvider";
 import { Provider } from "react-redux";
 import store from "./utils/store";
+import { serverHost } from "./utils/vars";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const f = await fetch(`http://localhost:8080/api/user/get/1`);
+  const f = await fetch(`${serverHost}/api/user/get/1`);
   if (!f.ok) {
     return { status: 404 };
   }

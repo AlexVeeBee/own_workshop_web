@@ -1,7 +1,7 @@
 import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useLoaderData, useOutletContext, useRouteError } from "@remix-run/react";
 import { Suspense, useEffect, useState } from "react";
-import Card from "~/components/card";
+import Card from "~/components/UI/card";
 import { IUser, IWorkshopItem } from "~/utils/types";
 
 import Icon from "~/components/icons";
@@ -9,6 +9,7 @@ import User from "~/components/user/user";
 import FormattedTextArea from "~/components/UI/formattedTextArea";
 import InfoCard from "~/components/UI/infoCard";
 import Markdown from "~/components/UI/Markdown";
+import { serverHost } from "~/utils/vars";
 
 export const meta: MetaFunction = () => {
     return [
@@ -42,7 +43,7 @@ const Comment = ({ data }: { data: IComment }) => {
 }
 
 export async function loader({ params }: LoaderFunctionArgs) {
-    const c = await fetch(`http://localhost:8080/api/workshop/get/${params.id}/comments`)
+    const c = await fetch(`${serverHost}/api/workshop/get/${params.id}/comments`)
     if (!c.ok) {
         throw new Error(`Unable to fetch comments (${c.status})`);
     }
