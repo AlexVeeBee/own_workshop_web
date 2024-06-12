@@ -14,10 +14,24 @@ export interface IWorkshopItemMedia {
     type: "image" | "video";
 }
 
+export interface IWorkshopPageConfig {
+    css: string;
+    globalCss: string;
+    headerimage: string;
+}
+
+export interface IWorkshopPageDetails {
+    config: IWorkshopPageConfig;
+    title: string;
+    description: string;
+    shortDescription: string;
+}
+
 export interface IWorkshopItem {
     id: number;
     name: string;
-    description: string;
+    description: string[];
+    shortDescription: string;
     version: string;
     tags: string[];
     thumb: string;
@@ -41,6 +55,7 @@ export interface IUser {
     username: string;
     pfp: string;
     banner?: string | null;
+    admin: boolean;
     nsfw: boolean;
 }
 

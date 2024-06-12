@@ -18,7 +18,7 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const i = await fetch(`${serverHost}/api/info/get`);
+  const i = await fetch(`${serverHost}/v1/info/get`);
   if (!i.ok) {
       throw new Error("Unable to fetch workshop info");
   }
@@ -72,7 +72,7 @@ export default function Index() {
                       key={item.id}
                       id={item.id}
                       title={item.name}
-                      description={item.description}
+                      description={item.shortDescription}
                       tags={item.tags}
                       image={`${serverHost}/${item.thumb}`}
                       style={{ maxWidth: "512px", justifyContent: "flex-start" }}

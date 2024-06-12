@@ -10,6 +10,9 @@ import LoadingCircle from "./LoadingCircle";
 import { useUser } from "./contexts/user/userProvider";
 import { useModal } from "./contexts/modal/modalProvider";
 import Card from "./UI/card";
+import Icon from "./icons";
+import UserHeader from "./user/UserHeader";
+import { serverHost } from "~/utils/vars";
 
 const LoginModal = ({
     onLogin,
@@ -52,6 +55,7 @@ const LoginModal = ({
                                                 pfp: data.pfp,
                                                 banner: data.banner,
                                                 nsfw: data.nsfw,
+                                                admin: data.admin,
                                             });
                                         }
                                     }).catch((e) => {
@@ -107,6 +111,83 @@ const UserHeaderModal = ({ user }: { user: IUser }) => {
     </div>)
 }
 
+
+const UserModal = (
+    {userData, setShowLoginButton, setUserData}: 
+    {userData: IUser, setShowLoginButton: (show: boolean) => void, setUserData: (user: IUser | null) => void}
+) => {
+    const modal = useModal();
+    const useUserProvider = useUser();
+    const dispatch = useAppDispatch();
+    // modal.openModal({
+    //     id: "user-modal",
+    //     title: userData.username,
+    //     content: (id) => (
+    //         <>
+    //             <UserHeaderModal user={userData} />
+    //             <div className="flex justify-center" style={{marginTop: "20px"}}>
+    //                 <a className="btn" href={`/user/${userData.id}`}>View workshop</a>
+    //                 <Buttons.Button
+    //                     btnType="DANGER"
+    //                     onClick={() => {
+    //                         useUserProvider.logout().then(() => {
+    //                             setUserData(null);
+    //                             setShowLoginButton(true);
+    //                             modal.closeModal(id);
+    //                         });
+    //                     }}
+    //                 >Logout</Buttons.Button>
+    //             </div>
+    //         </>
+    //     ),
+    //     style: {
+    //         width: "100%",
+    //         height: "100%",
+    //         maxWidth: "var(--page-width)",
+    //     }
+    // })
+
+    return (
+        <>
+            <UserHeader user={{
+                ...userData,
+            }} />
+            {/* <h1>{userData.username}</h1>
+            <p>{userData.id}</p>
+             */}
+            <div className="flex wrap button-bar" style={{ padding: "20px", gap: "20px", }}>
+                <Link style={{ borderRadius: "64px", }} to={`/user/${userData.id}`} className="link">
+                    <Buttons.LiminalButton
+                        style={{ padding: "12px", borderRadius: "64px", }}
+                        onClick={() => { modal.closeModal("user-modal"); }}
+                    >
+                        <p>View workshop</p>
+                    </Buttons.LiminalButton>
+                </Link>
+                <Link style={{ borderRadius: "64px", }} to={`/account/overview`} className="link">
+                    <Buttons.LiminalButton
+                        style={{ padding: "10px", borderRadius: "64px", }}
+                        onClick={() => { modal.closeModal("user-modal"); }}
+                    >
+                        <Icon name="account_cog" />
+                    </Buttons.LiminalButton>
+                </Link>
+                <Buttons.LiminalButton
+                    style={{ padding: "10px", borderRadius: "64px", }}
+                    onClick={() => { 
+                        modal.closeModal("user-modal");
+                        setUserData(null);
+                        setShowLoginButton(true);
+                        dispatch(setUser(null));
+                    }}
+                >
+                    <Icon name="logout" />
+                </Buttons.LiminalButton>
+            </div>
+        </>
+    )
+}
+
 export function AppHeader({
     user,
 }: {
@@ -150,6 +231,27 @@ export function AppHeader({
         });
     }
 
+    const userModal = () => {
+        if (!userData) return;
+
+        modal.openModal({
+            id: "user-modal",
+            title: userData?.username || "User",
+            style: {
+                width: "100%",
+                height: "100%",
+                maxWidth: "var(--page-width)",
+            },
+            content: () => (
+                <UserModal
+                    userData={userData}
+                    setShowLoginButton={setShowLoginButton}
+                    setUserData={setUserData}
+                />
+            ),
+        });
+    }
+
     return <>
         <header
             style={{
@@ -168,14 +270,14 @@ export function AppHeader({
                         showLoginButton && 
                             <Buttons.LiminalButton
                                 style={{
-                                    padding: "10px 20px",
-                                    borderRadius: "5px",
+                                    padding: "10px",
+                                    borderRadius: "64px",
                                 }}
                                 onClick={() => {
                                     loginModal();
                                 }}
                             >
-                                Login
+                                <Icon name="login" />
                             </Buttons.LiminalButton>
                     }
                     {
@@ -184,44 +286,38 @@ export function AppHeader({
                         )
                     }
                     {
-                        userData && <User 
-                            data={{
-                                pfp: userData.pfp,
-                                id: userData.id,
-                                username: userData.username,
-                                nsfw: userData.nsfw,
-                            }}
-                            showUsername={false}
-                            onClick={() => {
-                                modal.openModal({
-                                    id: "user-modal",
-                                    title: userData.username,
-                                    content: (id) => (
-                                        <>
-                                            <UserHeaderModal user={userData} />
-                                            <div className="flex justify-center" style={{marginTop: "20px"}}>
-                                                <a className="btn" href={`/user/${userData.id}`}>View workshop</a>
-                                                <Buttons.Button
-                                                    btnType="DANGER"
-                                                    onClick={() => {
-                                                        useUserProvider.logout().then(() => {
-                                                            setUserData(null);
-                                                            setShowLoginButton(true);
-                                                            modal.closeModal(id);
-                                                        });
-                                                    }}
-                                                >Logout</Buttons.Button>
-                                            </div>
-                                        </>
-                                    ),
-                                    style: {
-                                        width: "100%",
-                                        height: "100%",
-                                        maxWidth: "var(--page-width)",
-                                    }
-                                })
-                            }}
-                        />
+                        userData && 
+                        <div className="flex align-center" style={{gap: "10px"}}>
+                            {
+                                userData.admin && (
+                                    <Link style={{
+                                        borderRadius: "64px",
+                                    }} to="/admin/dashboard" className="link">
+                                    <Buttons.LiminalButton
+                                        style={{
+                                            padding: "10px",
+                                            borderRadius: "64px",
+                                        }}
+                                        onClick={() => {
+                                        }}
+                                    >
+                                        <Icon name="security" />
+                                    </Buttons.LiminalButton>
+                                    </Link>
+                                )
+                            }
+                            <div>
+                                <User 
+                                    data={{
+                                        ...userData,
+                                    }}
+                                    showUsername={false}
+                                    onClick={() => {
+                                        userModal()
+                                    }}
+                                />
+                            </div>
+                        </div>
                     }
                 </div>
             </div>

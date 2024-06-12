@@ -1,0 +1,43 @@
+.admin-page {
+    height: 100%;
+}
+
+.admin-page .sidepanel {
+    width: 250px;
+    height: 100%;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    overflow-x: hidden;
+}
+.admin-page>.center {
+    max-width: none;
+}
+.admin-page-container .content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 var(--global-page-padding);
+}
+.admin-page-container .content .center {
+    width: 100%;
+    max-width: var(--page-width);
+}
+.admin-page .sidepanel a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 20px;
+    background-color: var(--card-bkg-color);
+    display: block;
+}
+
+.admin-page .sidepanel a:hover {
+    background-color: var(--btn-primary-color);
+    color: white;
+}
+
+.admin-page .sidepanel a.active {
+    background-color: var(--btn-primary-color);
+    color: white;
+}

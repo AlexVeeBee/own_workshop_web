@@ -18,13 +18,13 @@ export const UserInfoCard = ({
     style
 }: userInfoCard) => {
     const verifyUser = async (id: string | number) => {
-        const f = await fetch(`${serverHost}/api/user/verify/${id}`)
+        const f = await fetch(`${serverHost}/v1/user/verify/${id}`)
         return await f.json()
     }
 
-    const [existsUser, setExistsUser] = useState(false)
+    const [httpError, setHttpError] = useState<string>("")
     const [userdata, setUserData] = useState<IUser | null>(user || null)
-    const [veryfying, setVeryfying] = useState(true)
+    const [veryfying, setVeryfying] = useState(false)
 
     if (!user) return (
         <div>
@@ -35,16 +35,21 @@ export const UserInfoCard = ({
 
     useEffect(() => {
         setUserData(user)
+        setVeryfying(true);
         
         verifyUser(user?.id).then((data) => {
             setVeryfying(false);
+            console.log(data)
             // check status
             if (data.status === 404) {
-                setExistsUser(false);
+                setHttpError("User not found");
                 return
             }
-            setExistsUser(true);
             setUserData(data);
+        }).catch((e) => {
+            setVeryfying(false);
+            setHttpError("Error verifying user");
+            console.error(e)
         });
     }, [])
 
@@ -67,6 +72,15 @@ export const UserInfoCard = ({
                     </InfoCard>
                 ) : null
             }
+            {   
+                httpError !== "" ? (
+                    <InfoCard
+                        status="error"
+                    >
+                        <p>{httpError}</p>
+                    </InfoCard>
+                ) : null
+            }
             <WorkshopHeader
                 textAlignment="right"
                 title={`${userdata?.username}'s profile`}
@@ -77,9 +91,10 @@ export const UserInfoCard = ({
                 user={{
                     id: userdata?.id,
                     username: userdata?.username,
-                    pfp: `${serverHost}/${userdata.pfp}`,
+                    pfp: `${userdata.pfp}`,
                     banner: `${serverHost}/${userdata.banner}`,
                     nsfw: userdata?.nsfw || false,
+                    admin: userdata?.admin || false,
                 }}
                 suffix={(
                     <div className="flex align-center"

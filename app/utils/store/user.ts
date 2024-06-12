@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { IUser } from "../types";
 import { Dispatch, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { serverHost } from "../vars";
+import cookie from "../cookie";
 
 const getUser = async (id: string | number) => {
     id = id.toString();
@@ -40,30 +41,42 @@ export const fetchUserLogin = async (username: string, password: string) => asyn
 
 const initialState: IUser & {
     loggedIn: boolean;
-    attemptingLogin: boolean;
     loginToken?: string;
 } = {
     loggedIn: false,
-    attemptingLogin: false,
     id: "",
     username: "",
     pfp: "",
     banner: "",
     nsfw: false,
+    admin: false,
 }
 
 export const user = createSlice({
     name: "user",
     initialState,
     reducers: {
-        setUser: (state, action: PayloadAction<IUser>) => {
-            state.id = action.payload.id;
-            state.username = action.payload.username;
-            state.pfp = action.payload.pfp;
-            state.banner = action.payload.banner;
-        },
-        setAttemptingLogin: (state, action: PayloadAction<boolean>) => {
-            state.attemptingLogin = action.payload;
+        setUser: (state, action: PayloadAction<IUser | null>) => {
+            if (action.payload === null) {
+                state.loggedIn = false;
+                cookie.remove("login");
+
+                Array.from(Object.keys(initialState)).forEach(key => {
+                    // @ts-ignore
+                    state[key] = initialState[key];
+                });
+
+                return;
+            }
+
+            Array.from(Object.keys(action.payload)).forEach(key => {
+                if (key === "token") {
+                    state.loggedIn = true;
+                    return;
+                }
+                // @ts-ignore
+                state[key] = action.payload[key];
+            });
         },
     }
 })

@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import "./UserHeader.css";
 import LoadingCircle from "../LoadingCircle";
 import { IUser } from "~/utils/types";
+import Icon from "../icons";
+import { serverHost } from "~/utils/vars";
 
 interface UserHeaderProps {
   user: IUser;
@@ -59,7 +61,7 @@ const UserHeader = ({
   useEffect(() => {
     if (imgref.current && user.pfp) {
       var img = new Image();
-      img.src = user.pfp;
+      img.src = `${serverHost}/${user.pfp}`;
       img.onload = function () {
         var rgb = getAverageRGB(img); 
         const white = (rgb.r + rgb.g + rgb.b < 552)
@@ -106,7 +108,7 @@ const UserHeader = ({
               className="noselect icon"
               alt="User avatar"
               ref={imgref}
-              src={user.pfp}
+              src={`${serverHost}/${user.pfp}`}
             /> 
             {avatarLoading ? (
               <div className="loading">
@@ -116,6 +118,18 @@ const UserHeader = ({
           </div>
           <div className="front">
             <h1 className={"username"}>{user.username}</h1>
+            <div className="flex">
+              <div className="user-roles flex" style={{
+                display: "flex",
+                gap: "5px",
+                padding: "5px",
+                backgroundColor: "#0000005f",
+                borderRadius: "5px",
+              }}>
+                {user.admin && <Icon name="security" title="Admin" />}
+                {user.nsfw && <Icon name="alert" title="Marked NSFW" />}
+              </div>
+            </div>
           </div>
         </div>
         <div className="suffix">

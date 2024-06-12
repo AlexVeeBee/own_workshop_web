@@ -15,6 +15,7 @@ import Button, { Buttons } from "~/components/UI/buttons";
 import { useAppSelector } from "~/utils/hooks";
 import { useUser } from "~/components/contexts/user/userProvider";
 import { serverHost } from "~/utils/vars";
+import Markdown from "~/components/UI/Markdown";
 
 export const meta: MetaFunction = () => {
     return [
@@ -44,18 +45,6 @@ export default function Item() {
         versionsAvailable: boolean,
     }>();
     const [NSFW_warning, setNSFW_warning] = useState(i.item.nsfw);
-    useEffect(() => {
-        // check tags
-        if (i.item.tags.includes("NSFW")) {
-            setNSFW_warning(true);
-        }
-    }, [])
-
-    // set meta tags
-    useEffect(() => {
-        document.title = i.item.name;
-        document.querySelector('meta[name="description"]')?.setAttribute("content", i.item.description);
-    }, [i])
 
     const showAnyway = () => {
         if (store.id) {
@@ -179,7 +168,9 @@ export default function Item() {
                     </div>
                 </Card>
                 <Card>
-                    <p>{i.item.description}</p>
+                    <Markdown
+                        markdown={Array.isArray(i.item.description) ? i.item.description.join("\n") : i.item.description}
+                    />
                 </Card>
                 <Card>
                     <div>

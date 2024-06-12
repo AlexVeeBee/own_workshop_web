@@ -1,5 +1,7 @@
+import "./sidebar.css"
 import { ReactNode, useContext, useEffect, useState } from "react";
 import { SidebarContext, sidebarOptions } from "./sidebarContext";
+
 
 interface ISidebarElement {
   id: string;
@@ -97,7 +99,7 @@ export const SidebarProvider = ({ children }: { children: ReactNode }) => {
       openSidebar,
       closeSidebar
     }}>
-      <div className={`sidebar-container ${open ? "open" : ""}`}>
+      <div className={`sidebar-overlay-container ${open ? "open" : ""}`}>
         <div className={`left-sidebar ${holdOpenIdsLeft?.length ? "has-content" : "" }`}>
             <div className="inner">
               {leftSidebar?.map((content, index) => (

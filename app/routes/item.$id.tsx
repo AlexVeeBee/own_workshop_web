@@ -12,6 +12,9 @@ import InfoCard from "~/components/UI/infoCard";
 import TabBar from "~/components/UI/tabBar";
 import Button, { Buttons } from "~/components/UI/buttons";
 import { serverHost } from "~/utils/vars";
+import TextHeader from "~/components/UI/textHeader";
+import { FetchNotOkError } from "~/utils/errors";
+import SimpleError from "~/components/_simpleError";
 
 export const meta: MetaFunction = () => {
     return [
@@ -20,6 +23,7 @@ export const meta: MetaFunction = () => {
     ];
 };
 
+const urlprefix = "/item";
 const pages = [
     "overview",
     "comments",
@@ -30,11 +34,11 @@ const pages = [
 ]
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-    const f = await fetch(`${serverHost}/api/workshop/get/${params.id}`);
+    const f = await fetch(`${serverHost}/v1/workshop/get/${params.id}`);
     if (!f.ok) {
-        throw new Error("Item not found");
+        throw new FetchNotOkError("Unable to fetch item: " + `${f.status} ${f.statusText}`);
     }
-    const versions = await fetch(`${serverHost}/api/workshop/get/${params.id}/versions`);
+    const versions = await fetch(`${serverHost}/v1/workshop/get/${params.id}/versions`);
     if (!versions.ok) {
         console.warn("[WARN]:Versions not found");
     }
@@ -77,6 +81,12 @@ export default function Item() {
         type: "info",
         message: "This is only a placeholder"
     })
+    
+    // set meta tags
+    useEffect(() => {
+        document.title = i.item.name;
+        document.querySelector('meta[name="description"]')?.setAttribute("content", i.item.shortDescription);
+    }, [i])
 
     useEffect(() => {
         console.log("is nsfw", i.item.nsfw);
@@ -105,9 +115,13 @@ export default function Item() {
         <main id="workshop-item-container">
             {i.item.properties?.CSS ? (<link rel="stylesheet" href={`${serverHost}/${i.item.properties.CSS}`} />) : null}
             <div className="center" style={{margin: "0 24px"}}>
-                <div style={{width: "100%", margin: "24px 0"}} className="margin">
+                {/* <div style={{width: "100%", margin: "24px 0"}} className="margin">
                     <h1>Someonws Workshop</h1>
-                </div>
+                </div> */}
+                <TextHeader
+                    title={i.item.name}
+                    description={i.item.shortDescription}
+                />
             </div>
             {
                 itemWarnings.size > 0 && <div className="center flex column" style={{
@@ -131,32 +145,32 @@ export default function Item() {
                 tabs={[
                     {
                         title: "Overview",
-                        link: `/item/${i.id}/overview`,
+                        link: `${urlprefix}/${i.id}/overview`,
                         position: "left"
                     },
                     {
                         title: "Comments",
-                        link: `/item/${i.id}/comments`,
+                        link: `${urlprefix}/${i.id}/comments`,
                         position: "left"
                     },
                     {
                         title: "Changelog",
-                        link: `/item/${i.id}/changelog`,
+                        link: `${urlprefix}/${i.id}/changelog`,
                         position: "left"
                     },  
                     {
                         title: "Versions",
-                        link: `/item/${i.id}/versions`,
+                        link: `${urlprefix}/${i.id}/versions`,
                         position: "left"
                     },
                     {
                         title: "Config",
-                        link: `/item/${i.id}/config`,
+                        link: `${urlprefix}/${i.id}/config`,
                         position: "left"
                     },
                     {
                         title: "Debug",
-                        link: `/item/${i.id}/debug`,
+                        link: `${urlprefix}/${i.id}/debug`,
                         position: "left"
                     }
                 ]}
@@ -186,19 +200,7 @@ export function ErrorBoundary() {
     const error = useRouteError();
     return (
         <main>
-          <div className="center flex column">
-            <div style={{ textAlign: "center", padding: "20px", paddingBottom: "0" }}>
-                {/* @ts-ignore */}
-                <p>Error on this item: {error.message}</p>
-            </div>
-            {
-                // @ts-ignore
-                error.stack && <pre
-                    style={{padding: "20px", overflow: "auto", whiteSpace: "pre-wrap"}}
-                // @ts-ignore
-                >{error.stack}</pre>
-            }
-          </div>
-      </main>
+            <div className="center"> <SimpleError errordata={error} /> </div>
+        </main>
     );
   }

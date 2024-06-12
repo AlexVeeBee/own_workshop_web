@@ -1,8 +1,15 @@
 // custom express error handler
 
-class FetchNotFoundError extends Error {
+export class FetchNotFoundError extends Error {
     constructor(message: string) {
         super(message);
         this.name = "FetchNotFoundError";
+    }
+}
+
+export class FetchNotOkError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = "FetchNotOkError";
     }
 }

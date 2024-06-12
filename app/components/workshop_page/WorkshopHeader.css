@@ -30,6 +30,10 @@
     display: flex;
 }
 
+.workshop-header > .details > .inner {
+    flex-shrink: 0;
+}
+
 .workshop-header .details.left {
     justify-content: flex-start;
     align-items: center;

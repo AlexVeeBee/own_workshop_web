@@ -1,5 +1,5 @@
 import { Link, Outlet, useLoaderData, useParams, useRouteError } from "@remix-run/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { WorkshopHeader } from "~/components/workshop_page/WorkshopHeader";
 import { useUser } from "~/components/contexts/user/userProvider";
 import UserHeader from "~/components/user/UserHeader";
@@ -17,7 +17,7 @@ import UploadModal from "~/components/uploads/modal";
 import { serverHost } from "~/utils/vars";
 
 export async function loader({ params }: { params: { id: string } }) {
-    const f = await fetch(`${serverHost}/api/user/get/${params.id}`);
+    const f = await fetch(`${serverHost}/v1/user/get/${params.id}`);
     if (!f.ok) {
         return { status: f.status };
     }
@@ -65,6 +65,13 @@ export default function UserPage() {
 
     const [nsfw, setNsfw] = useState<boolean>(user.nsfw);
 
+    useEffect(() => {
+        // check if the user is logged in and owns the account
+        if (userStore.id === user.id) {
+            setNsfw(false);
+        }
+    }, [userStore.id, user.id])
+
     return (
         <main>
             <div className="center">
@@ -94,7 +101,7 @@ export default function UserPage() {
                                         }}
                                     >
                                         <Icon name="alert" />
-                                        <p>NSFW Content</p>
+                                        <p>This user has NSFW content</p>
                                     </div>
                                 </InfoCard>
                         }

@@ -9,6 +9,7 @@ import "./user.css"
 import InfoCard from "../UI/infoCard"
 import Icon from "../icons"
 import { serverHost } from "~/utils/vars"
+import UserHeader from "./UserHeader"
 
 interface ComponentUser {
     id?: string;
@@ -74,17 +75,20 @@ export default function User({
                         !user?.nsfw ? (
                             <UserInfoCard user={user} />
                         ) : (
-                            <div className="flex align-center column" style={{gap: "10px"}}>
+                            <div className="flex column" >
+                                <UserHeader user={{
+                                    ...user,
+                                }} />
                                 <InfoCard
                                     status="error"
                                     style={{
                                         display: "flex",
-                                        alignItems: "center",
+                                        flexDirection: "column",
                                         gap: "var(--global-page-gap-2)",
                                     }}
                                 >
-                                    <Icon name="alert" />
-                                    <p>This user has been marked as NSFW</p>
+                                    <h1>Sensitive content</h1>
+                                    <p>This user has been marked as NSFW, some content may not be suitable for all audiences</p>
                                 </InfoCard>
                             </div>
                         )
@@ -128,7 +132,7 @@ export default function User({
                 user?.pfp && <UserPFPIcon src={`${serverHost}/${user?.pfp}`} alt="User avatar" />
             }
             {
-                showUsername && <p>{user?.username || "..."}</p>
+                showUsername && <> { user?.admin && <Icon title="ADMIN" name="security"/>} { user?.nsfw && <Icon title="NSFW" name="alert"/>} <p>{user?.username || "..."}</p></>
             }
         </div>
     )

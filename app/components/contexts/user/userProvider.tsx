@@ -31,13 +31,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       throw new Error("User not found: " + await f.text());
     }
     const json = await f.json();
-    dispatch(setUser({
-      id: json.id,
-      username: json.username,
-      pfp: json.pfp, 
-      banner: json.banner,
-      nsfw: json.nsfw || false,
-    }));
+    dispatch(setUser(json));
     // set cookie
     cookie.set("login", json.token, 1);
     return json;
@@ -48,13 +42,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if (!f.ok) {
       throw new Error("Failed to logout");
     }
-    dispatch(setUser({
-      id: "",
-      username: "",
-      pfp: "",
-      banner: "",
-      nsfw: false,
-    }));
+    dispatch(setUser(await f.json()));
     cookie.remove("login");
   }
 
@@ -78,13 +66,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       throw new Error("User not found: " + await f.text());
     }
     const json = await f.json();
-    dispatch(setUser({
-      id: json.id,
-      username: json.username,
-      pfp: json.pfp,
-      banner: json.banner,
-      nsfw: json.nsfw || false,
-    }));
+    dispatch(setUser(json));
     return json;
   }
 

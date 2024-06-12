@@ -5,6 +5,7 @@ interface WorkshopHeaderProps {
     title: string;
     description: string;
     image: string;
+    showGradient?: boolean;
     overrideAspectRatio?: string | null;
     children?: React.ReactNode;
     childrenPos?: "left" | "right";
@@ -16,6 +17,7 @@ export function WorkshopHeader(
         title,
         description,
         image,
+        showGradient = true,
         overrideAspectRatio,
         children,
         childrenPos = "left",
@@ -28,7 +30,7 @@ export function WorkshopHeader(
             aspectRatio: overrideAspectRatio,
         },
     }}>
-        <div className="bkg-gradient"></div>
+        {showGradient && <div className="bkg-gradient"></div>}
         <div className={`details ${textAlignment}`}>
             {
                 children && childrenPos === "left" && (

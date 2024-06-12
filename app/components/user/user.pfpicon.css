@@ -1,6 +1,12 @@
-img.user-pfp-icon {
+.user-pfp-container {
     width: 32px;
     height: 32px;
+    overflow: hidden;
     border-radius: 50%;
+}
+
+.user-pfp-container > img.user-pfp-icon {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
