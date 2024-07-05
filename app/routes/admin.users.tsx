@@ -1,3 +1,9 @@
+export const handle = {
+    breadcrumb: () => {
+        return "Users";
+    }
+};
+
 export default function AdminUsers() {
     return (
         <div className="admin-users">

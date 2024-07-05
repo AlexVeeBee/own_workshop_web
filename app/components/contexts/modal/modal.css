@@ -61,7 +61,7 @@
 .modal-container .modal-wrapper .modal {
     position: relative;
     margin: 24px;
-    background: #1a1a1a;
+    background: var(--secondary-bkg-color);
     box-shadow: 0 2px 5px #00000025;
     border: 1px solid var(--border-color);
     display: flex;
@@ -88,7 +88,7 @@
 .modal-container .modal .modal-header .modal-close,
 .modal-container .modal .overlay.modal-close
 {
-    z-index: 24;
+    z-index: 5000;
     box-shadow: 
     0 0px 0px 0px #00000091
     ;

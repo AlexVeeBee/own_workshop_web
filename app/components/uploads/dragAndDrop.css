@@ -1,0 +1,38 @@
+.drag-and-drop {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    border-color: #333;
+    background-color: #222;
+    padding: 20px;
+    transition: border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+.drag-and-drop *{
+    transition: color 0.3s;
+}
+
+.drag-and-drop input {
+    display: none;
+    z-index: -1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.drag-and-drop.dragging {
+    border-color: var(--primary-color);
+}
+.drag-and-drop.dragging *{
+    color: var(--primary-color);
+}
+.drag-and-drop .noMouseEvents {
+    pointer-events: none;
+}

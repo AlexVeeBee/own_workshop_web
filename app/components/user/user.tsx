@@ -34,7 +34,7 @@ export default function User({
     const [verified, setVerified] = useState(true)
 
     const verifyUser = async (id: string | number) => {
-        const f = await fetch(`${serverHost}/api/user/verify/${id}`)
+        const f = await fetch(`${serverHost}/v1/user/verify/${id}`)
         return await f.json()
     }
 

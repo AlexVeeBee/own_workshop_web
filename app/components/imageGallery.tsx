@@ -3,6 +3,24 @@ import "./imageGallery.css";
 import LoadingCircle from "./LoadingCircle";
 import { useModal } from "./contexts/modal/modalProvider";
 import Icon from "./icons";
+import { Buttons } from "./UI/buttons";
+import Card from "./UI/card";
+
+const ImageInfoSidebar = ({ imageinfo }: { imageinfo: imageinfo }) => {
+    return (
+        <div className="imageinfo-sidebar">
+            <Card>
+                <h1>Image Info</h1>
+                <p>size: {imageinfo.size}</p>
+                <p>format: {imageinfo.format}</p>
+            </Card>
+            <Card>
+                <h3>Image data</h3>
+                <p>Nothing else was found within the file</p>
+            </Card>
+        </div>
+    )
+}
 
 interface MediaItem {
     src: string;
@@ -93,6 +111,11 @@ interface ImageGalleryProps {
      * aslo shows the small image 
      */
     blurImage?: boolean;
+
+    /**
+     * Shows the information image button
+     */
+    showImageInfoButton?: boolean;
 }
 
 type imageSwitcherAppearance = 
@@ -113,8 +136,15 @@ export default function ImageGallery({
     showimageinfo = false,
     zoomable = false,
     imageSwitcher = "thumbnail",
-    blurImage = false
+    blurImage = false,
+    showImageInfoButton = false
 }: ImageGalleryProps) {
+    const [showsidebar, setShowsidebar] = useState<"none" | "right" | "left" | "both">("none");
+    // const [left_sidebar, setLeft_sidebar] = useState<JSX.Element | null>(null);
+    // const [right_sidebar, setRight_sidebar] = useState<JSX.Element | null>(null);
+
+    const [showimageInfoSidebar, setShowimageInfoSidebar] = useState(false);
+
     const [jsLoaded, setJsLoaded] = useState(false);
     useEffect(() => {
         setJsLoaded(true);
@@ -127,7 +157,7 @@ export default function ImageGallery({
 
     const [showOverlay, setShowOverlay] = useState(true);
     const [overlayContent, setOverlayContent] = useState<JSX.Element | null>(<LoadingCircle />);
-    const [mediaInfo, setMediaInfo] = useState<imageinfo | videoinfo | null>(null);
+    const [mediaInfo, setMediaInfo] = useState<imageinfo | null>(null);
     
     const verifyImageFormat = (format: string) => {
         return ["png", "jpg", "jpeg", "webp", "svg", "gif"].includes(format);
@@ -144,17 +174,37 @@ export default function ImageGallery({
     }
 
     useEffect(() => {
-        setImageLoadingState("loading");
-
+        setOverlayContent(
+            <p>Loading image...</p>
+        );
+        console.log(!itemimageref.current ? "No reference to the image" : "Reference to the image")
         if (!itemimageref.current) {
+            console.warn("No reference to the image");
+            setOverlayContent(
+                <p>No refrerence to the image</p>
+            );
             return;
         };
+        setImageLoadingState("loading");
 
         const observer = new MutationObserver((changes) => {
             if (changes.length === 1 && changes[0].attributeName === "src") {
                 setImageLoadingState("loading");
             }
         });
+        
+        if (currImage < 0 || currImage >= media.length) {
+            setCurrentImage(0);
+        }
+        // is empty
+        if (media.length === 0) {
+            setImageLoadingState("error");
+            setOverlayContent(
+                <p>No images found</p>
+            );
+            return;
+        }
+
         observer.observe(itemimageref.current, {
             attributes: true,
             attributeFilter: ["src"]
@@ -165,7 +215,11 @@ export default function ImageGallery({
             getImageInfo();
         }
         itemimageref.current.onerror = () => {
+            console.error("Error loading image");
             setImageLoadingState("error");
+            setOverlayContent(
+                <p>Error loading image</p>
+            );
         }
         if (itemimageref.current.complete) {
             setImageLoadingState("loaded");
@@ -179,7 +233,7 @@ export default function ImageGallery({
             }
             observer.disconnect();
         }
-    }, [itemimageref, jsLoaded])
+    }, [itemimageref, jsLoaded, itemimageref.current])
     
     useEffect(() => {
         switch (imageLoadingState) {
@@ -193,9 +247,9 @@ export default function ImageGallery({
                 break;
             case "error":
                 setShowOverlay(true);
-                setOverlayContent(
-                    <p>Error loading image</p>
-                );
+                // setOverlayContent(
+                //     <p>Error loading image</p>
+                // );
                 break;
             case "loaded":
                 setShowOverlay(false);
@@ -252,73 +306,119 @@ export default function ImageGallery({
                     disableModal={true}
                     defaultAlt={media[currentImage].alt}
                     disableAspectRatio={true}
+                    showImageInfoButton={true}
                 />
             )
         });
     }
 
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        if (media.length === 0) {
+            console.error("No length of media: show error");
+            setImageLoadingState("error");
+            setOverlayContent(
+                <p>Missing media</p>
+            );
+            return;
+        }
+
+        if (currImage < 0 || currImage >= media.length) {
+            setCurrentImage(0);
+            setImageLoadingState("loading");
+        }
+    }, [media])
+
     return (
         <div className={`imageGallery ${className}`} style={style}>
-            {/* <div className="debug">
-                <p>currentImage: {currentImage}</p>
-                <p>imageLoadingState: {imageLoadingState}</p>
-                <p>showOverlay: {showOverlay ? "true" : "false"}</p>
-                <p>overlayContent: {overlayContent ? "true" : "false"}</p>
-            </div> */}
-            <div className={`imageContainer ${disableAspectRatio ? "disableAspectRatio" : ""} ${disableModal ? "disablePointer" : ""} imgfit-${
-                imageLoadingState == "loaded" && !blurImage ? imagefit : "contain"
-            }`}
-                onClick={() => openImagePreviewModal()}
+            <div className="wrapper"
                 style={{
-                    overflow: zoomable ? "auto" : "hidden",
-                    aspectRatio: overrideAspectRatio || `16/9`,
-                    ...style
+                    aspectRatio: !disableAspectRatio ? overrideAspectRatio || "16/9" : "auto"
                 }}
             >
-                {
-                    blurImage ? (
-                        <div className="overlay show blur">
-                            <Icon 
-                                size="128px"
-                                name="eye_off"
-                            />
-                        </div>
-                    ) : null
-                }
-                {
-                    showOverlay ? (
-                        <div className={`overlay show ${blurImage ? "blur" : ""}`}> {overlayContent} </div>
-                    ) : null
-                }
-                {   
-                    media.length > 0 &&
-                        <>
-                        {jsLoaded ? <img 
-                            ref={itemimageref} 
-                            src={!blurImage ? media[currentImage].src : media[currentImage].smallsrc || media[currentImage].src} 
-                            alt={media[currentImage].alt || defaultAlt} 
-                            className="mainImage"
-                        /> : null}
-                        { showimageinfo ? mediaInfo ? (
-                            <div className="imageinfo">
-                                <p>size: {mediaInfo.size} format: {mediaInfo.format}</p>
+                {/* <div className="debug">
+                    <p>currentImage: {currentImage}</p>
+                    <p>imageLoadingState: {imageLoadingState}</p>
+                    <p>showOverlay: {showOverlay ? "true" : "false"}</p>
+                    <p>overlayContent: {overlayContent ? "true" : "false"}</p>
+                </div> */}
+                <div className={`imageContainer ${disableAspectRatio ? "disableAspectRatio" : ""} ${disableModal ? "disablePointer" : ""} imgfit-${
+                    imageLoadingState == "loaded" && !blurImage ? imagefit : "contain"
+                }`}
+                    onClick={() => openImagePreviewModal()}
+                    style={{
+                        overflow: zoomable ? "auto" : "hidden",
+                        aspectRatio: !disableAspectRatio ? overrideAspectRatio || `16/9` : "auto",
+                        ...style
+                    }}
+                >
+                    {
+                        blurImage ? (
+                            <div className="overlay show blur">
+                                <Icon 
+                                    size="128px"
+                                    name="eye_off"
+                                />
                             </div>
-                        ) : (
-                            <div className="imageinfo">
-                                <p>Loading image info...</p>
-                            </div>
-                        ) : null }
-                        {media[currentImage].shortDescription && (
-                            <p className="shortDescription">{media[currentImage].shortDescription}</p>
-                        )}
-                        </>
-                }
+                        ) : null
+                    }
+                    {
+                        showOverlay ? (
+                            <div className={`overlay show ${blurImage ? "blur" : ""}`}> {overlayContent} </div>
+                        ) : null
+                    }
+                    {   
+                        media.length > 0 && media[currentImage].src &&
+                            <>
+                            {jsLoaded ? <img 
+                                ref={itemimageref} 
+                                src={!blurImage ? media[currentImage].src : media[currentImage].smallsrc || media[currentImage].src} 
+                                alt={media[currentImage].alt || defaultAlt} 
+                                className="mainImage"
+                            /> : null}
+                            { showimageinfo ? mediaInfo ? (
+                                <div className="imageinfo">
+                                    <p>size: {mediaInfo.size} format: {mediaInfo.format}</p>
+                                </div>
+                            ) : (
+                                <div className="imageinfo">
+                                    <p>Loading image info...</p>
+                                </div>
+                            ) : null }
+                            {media[currentImage].shortDescription && (
+                                <p className="shortDescription">{media[currentImage].shortDescription}</p>
+                            )}
+                            </>
+                    }
+
+                </div>
                 {
-                    !disableModal && (
+                    (!disableModal || showImageInfoButton) && (
                         <div className="corner-hover">
                             <div className="inner">
-                                <Icon name="magnify_plus" />
+                                {
+                                    !disableModal && <Icon name="magnify_plus" />
+                                }
+                                {/* button img info */}
+                                {
+                                    showImageInfoButton && (
+                                        <Buttons.LiminalButton
+                                            onClick={() => { setShowsidebar("right"); setShowimageInfoSidebar(!showimageInfoSidebar); }}                                            >
+                                            <Icon name="outline_info" />
+                                        </Buttons.LiminalButton>
+                                    )
+                                }
                             </div>
+                        </div>
+                    )
+                }
+                {
+                    (showsidebar === "both" || showsidebar === "right") &&
+                    showimageInfoSidebar 
+                    && (
+                        <div className="mini-sidebar right">
+                            <ImageInfoSidebar imageinfo={mediaInfo as imageinfo} />
                         </div>
                     )
                 }

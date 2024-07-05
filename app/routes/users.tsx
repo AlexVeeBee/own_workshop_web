@@ -6,11 +6,19 @@ import User from "~/components/user/user";
 import LoadingCircle from "~/components/LoadingCircle";
 import { serverHost } from "~/utils/vars";
 import TextHeader from "~/components/UI/textHeader";
+import SimpleError from "~/components/_simpleError";
+import { FetchError } from "~/utils/errors";
+
+export const handle = {
+    breadcrumb: () => {
+        return "Users";
+    }
+};
 
 export async function loader() {
     const f = await fetch(`${serverHost}/v1/users`);
     if (!f.ok) {
-        throw new Error(`${f.status} - ${f.statusText}: ${await f.text()}`);
+        throw new FetchError(`${f.status} - ${f.statusText}: ${await f.text()}`);
     }
     return f.json();
 }
@@ -100,22 +108,12 @@ export default function UserPage() {
 export function ErrorBoundary() {
     const error = useRouteError();
     return (
-      <>
-        <main>
-          <div className="center flex column">
-            <div style={{ textAlign: "center", padding: "20px", paddingBottom: "0" }}>
-                {/* @ts-ignore */}
-                <p>Unable to fetch users: {error.message}</p>
-            </div>
-            {
-                // @ts-ignore
-                error.stack && <pre
-                    style={{padding: "20px", overflow: "auto", whiteSpace: "pre-wrap"}}
-                // @ts-ignore
-                >{error.stack}</pre>
-            }
-          </div>
-      </main>
-      </>
+        <>
+            <main>
+                <div className="center">
+                    <SimpleError errordata={error} />
+                </div>
+            </main>
+        </>
     );
   }

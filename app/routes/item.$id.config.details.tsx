@@ -9,6 +9,12 @@ import Icon from "~/components/icons";
 import ImageGallery from "~/components/imageGallery";
 import InfoCard from "~/components/UI/infoCard";
 
+export const handle = {
+    breadcrumb: () => {
+        return "Details";
+    }
+};
+
 export const meta: MetaFunction = () => {
     return [
       { title: "Item" },

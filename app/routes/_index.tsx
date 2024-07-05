@@ -9,6 +9,13 @@ import SidebarFilters from "~/components/homepage/sidebar.filters";
 import Card from "~/components/UI/card";
 import InfoCard from "~/components/UI/infoCard";
 import { serverHost } from "~/utils/vars";
+import { FetchError } from "~/utils/errors";
+
+export const handle = {
+  breadcrumb: () => {
+      return "Workshop";
+  }
+};
 
 export const meta: MetaFunction = () => {
   return [
@@ -20,11 +27,11 @@ export const meta: MetaFunction = () => {
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const i = await fetch(`${serverHost}/v1/info/get`);
   if (!i.ok) {
-      throw new Error("Unable to fetch workshop info");
+      throw new FetchError("Unable to fetch workshop info");
   }
-  const w = await fetch(`${serverHost}/api/workshop`);
+  const w = await fetch(`${serverHost}/v1/workshop`);
   if (!w.ok) {
-      throw new Error("No items found");
+      throw new FetchError("No items found");
   }
   const final = [ await w.json(), await i.json() ];
   return final;

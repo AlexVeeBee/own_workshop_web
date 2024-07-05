@@ -5,6 +5,12 @@ import { WorkshopHeader } from "~/components/workshop_page/WorkshopHeader";
 import { useAppSelector } from "~/utils/hooks";
 import { serverHost } from "~/utils/vars";
 
+export const handle = {
+    breadcrumb: () => {
+        return "Account";
+    }
+};
+
 const urlprefix = "/account";
 const pages = [
     "overview",
@@ -60,12 +66,14 @@ export default function Account() {
                 `}
             </style>
             <main className="account-page">
+                <div className="center">
+
                 <SidebarContainer 
                     style={{ height: "100%", width: "100%"}}
                     onSidebarClick={(page) => {}}
                     pages={[
                         {
-                            path: `${urlprefix}/overview`,
+                            path: `${urlprefix}/`,
                             title: "Overview",
                             default: true,
                         },
@@ -73,49 +81,12 @@ export default function Account() {
                             path: `${urlprefix}/settings`,
                             title: "Settings",
                         },
-                        {
-                            path: `${urlprefix}/security`,
-                            title: "Security",
-                        },
+                        // {
+                        //     path: `${urlprefix}/security`,
+                        //     title: "Security",
+                        // },
                     ]}
                 />
-                <div className="center flex column">
-                    {/* <TextHeader
-                        title="Account"
-                        description="Your account information"
-                    />    
-                    <WorkshopHeader
-                        title=""
-                        description=""
-                        showGradient={false}
-                        textAlignment="right"
-                        image={`${serverHost}/${userstore.banner}`}
-                    />
-                    <UserHeader user={userstore} />
-                    <pre>
-                        {JSON.stringify(userstore, null, 2)}
-                    </pre> */}
-                    
-                    {/* <div className="sidebar-container">
-                        <div className="sidebar">
-                            {pages.map((page, index) => (
-                                <a key={index} href={`${urlprefix}/${page}`}>
-                                    {page}
-                                </a>
-                            ))}
-                        </div>
-                        <div className="content">
-                            <div className="flex column">
-                                <TextHeader
-                                    title="Overview"
-                                    description="Your account overview"
-                                />
-                                <pre>
-                                    {JSON.stringify(userstore, null, 2)}
-                                </pre>
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
             </main>
         </>

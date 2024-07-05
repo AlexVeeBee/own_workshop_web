@@ -1,0 +1,63 @@
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 75;
+}
+
+.breadcrumbs > .center {
+    display: flex;
+    align-items: center;
+    max-width: var(--page-width);
+    border-color: var(--border-color);
+    border-style: solid;
+    border-width:  0px 1px 1px 1px;
+    width: 100%;
+    overflow: auto;
+    background-color: var(--secondary-bkg-color);
+}
+
+.breadcrumbs > .center > .breadcrumb {
+    display: flex;
+    padding: 0.5rem 0;
+    align-items: center;
+    font-size: 1.2rem;
+    padding-left: 2rem;
+    margin-left: -1rem;
+    padding-right: 1.7rem;
+    position: relative;
+    overflow: hidden;
+    z-index: 2;
+}
+.breadcrumbs > .center > .breadcrumb span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    z-index: 1;
+}
+
+.breadcrumbs > .center > .breadcrumb::before,
+.breadcrumbs > .center > .breadcrumb::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0.5rem;
+    height: 50%;
+    width: 250px;
+    background-color: var(--secondary-bkg-color);
+    border-right: 3px solid var(--border-color);
+    transform-origin: 50% 50%;
+    transform: skewX(35deg);
+}
+.breadcrumbs > .center > .breadcrumb::after {
+    top: 50%;
+    transform: skewX(-35deg);
+}
+
+.breadcrumbs > .center > .breadcrumb:hover::before,
+.breadcrumbs > .center > .breadcrumb:hover::after {
+    background-color: var(--primary-bkg-color);
+}

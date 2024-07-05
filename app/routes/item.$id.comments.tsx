@@ -10,6 +10,13 @@ import FormattedTextArea from "~/components/UI/formattedTextArea";
 import InfoCard from "~/components/UI/infoCard";
 import Markdown from "~/components/UI/Markdown";
 import { serverHost } from "~/utils/vars";
+import { FetchError } from "~/utils/errors";
+
+export const handle = {
+    breadcrumb: () => {
+        return "Comments";
+    }
+};
 
 export const meta: MetaFunction = () => {
     return [
@@ -43,9 +50,9 @@ const Comment = ({ data }: { data: IComment }) => {
 }
 
 export async function loader({ params }: LoaderFunctionArgs) {
-    const c = await fetch(`${serverHost}/api/workshop/get/${params.id}/comments`)
+    const c = await fetch(`${serverHost}/v1 /workshop/get/${params.id}/comments`)
     if (!c.ok) {
-        throw new Error(`Unable to fetch comments (${c.status})`);
+        throw new FetchError(`Unable to fetch comments (${c.status})`);
     }
     return c.json();
 }

@@ -10,6 +10,12 @@ import ImageGallery from "~/components/imageGallery";
 import InfoCard from "~/components/UI/infoCard";
 import TabBar from "~/components/UI/tabBar";
 
+export const handle = {
+    breadcrumb: () => {
+        return "Config";
+    }
+};
+
 export const meta: MetaFunction = () => {
     return [
       { title: "Item" },

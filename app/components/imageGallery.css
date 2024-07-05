@@ -15,11 +15,24 @@ div.imageGallery {
 div.imageGallery img {
     max-width: 100%;
 }
-div.imageGallery>.imageContainer {
+div.imageGallery>.wrapper {
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+}
+div.imageGallery>.wrapper>.imageContainer {
     --grid-color: rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
     width: 100%;
+    max-width: 100%;
+    max-height: 100%;
     aspect-ratio: 16/9;
     /* grid background */
     background-image: 
@@ -45,14 +58,16 @@ div.imageGallery>.imageContainer {
 }
 
 /* corner-hover */
-div.imageGallery>.imageContainer>.corner-hover {
+div.imageGallery>.wrapper>.corner-hover {
     position: absolute;
     bottom: 0px;
     right: 0px;
     transform: translateY(100%);
     transition: transform var(--transition-duration) var(--transition-animation);
+    pointer-events: none;
+    z-index: 1500;
 }
-div.imageGallery>.imageContainer>.corner-hover>.inner {
+div.imageGallery>.wrapper>.corner-hover>.inner {
     background-color: var(--overlay-bkg-color);
     display: flex;
     gap: 10px;
@@ -60,54 +75,57 @@ div.imageGallery>.imageContainer>.corner-hover>.inner {
     margin: 10px;
     padding: 10px;
 }
-div.imageGallery>.imageContainer:has(.shortDescription)>.corner-hover>.inner {
+/* div.imageGallery>.wrapper:has(.shortDescription)>.corner-hover>.inner {
     margin-bottom: 0;
     background-color: transparent;
     padding: 7px;
-}
+} */
 
-div.imageGallery>.imageContainer:hover>.corner-hover {
+div.imageGallery>.wrapper:hover>.corner-hover {
     transform: translateY(0);
+}
+div.imageGallery>.wrapper:hover>.corner-hover button{
+    pointer-events: auto;
 }
 
 /* disablePointer  */
-div.imageGallery>.imageContainer.disablePointer {
+div.imageGallery>.wrapper>.imageContainer.disablePointer {
     cursor: default;
 }
 /* disableAspectRatio */
-div.imageGallery>.imageContainer.disableAspectRatio {
+div.imageGallery>.wrapper>.imageContainer.disableAspectRatio {
     aspect-ratio: auto;
     width: 100%;
     height: 100%;
     position: relative;
 }
-div.imageGallery>.imageContainer img {
+div.imageGallery>.wrapper>.imageContainer img {
     /* make the browser not snap to the image */
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
 }
 /* hiddenImage */
-div.imageGallery>.imageContainer img.hiddenImage {
+div.imageGallery>.wrapper>.imageContainer img.hiddenImage {
     display: none;
 }
-div.imageGallery>.imageContainer img.hiddenImage.show {
+div.imageGallery>.wrapper>.imageContainer img.hiddenImage.show {
     display: block;
 }
 
-div.imageGallery>.imageContainer.imgfit-cover img {
+div.imageGallery>.wrapper>.imageContainer.imgfit-cover img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
-div.imageGallery>.imageContainer.imgfit-contain img {
+div.imageGallery>.wrapper>.imageContainer.imgfit-contain img {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
 /* shortDescription */
-div.imageGallery>.imageContainer>.shortDescription {
+div.imageGallery>.wrapper>.imageContainer>.shortDescription {
     background-color: var(--overlay-bkg-color);
     position: absolute;
     bottom: 0;
@@ -120,11 +138,11 @@ div.imageGallery>.imageContainer>.shortDescription {
     transform: translateY(100%);
     transition: transform var(--transition-duration) var(--transition-animation);
 }
-div.imageGallery>.imageContainer:hover>.shortDescription {
+div.imageGallery>.wrapper>.imageContainer:hover>.shortDescription {
     transform: translateY(0);
 }
 /* imageinfo */
-div.imageGallery>.imageContainer>.imageinfo {
+div.imageGallery>.wrapper>.imageContainer>.imageinfo {
     background-color: var(--overlay-bkg-color);
     position: absolute;
     top: 0;
@@ -140,6 +158,7 @@ div.imageGallery>.gallery {
     width: 100%;
     display: flex;
     gap: 10px;
+    flex-shrink: 0;
     overflow: auto;
 }
 div.imageGallery>.gallery>.image {
@@ -205,7 +224,7 @@ div.imageGallery>.arrows>.currentImage {
     padding: 0 10px;
 }
 
-div.imageGallery>.imageContainer .overlay {
+div.imageGallery>.wrapper>.imageContainer .overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -217,10 +236,49 @@ div.imageGallery>.imageContainer .overlay {
     align-items: center;
     z-index: 10;
 }
-div.imageGallery>.imageContainer .overlay.blur {
+div.imageGallery>.wrapper>.imageContainer .overlay.blur {
     backdrop-filter: blur(64px);
 }
 /* showOverlay */
-div.imageGallery>.imageContainer .overlay.show {
+div.imageGallery>.wrapper>.imageContainer .overlay.show {
     display: flex;
+}
+
+/* mini sidebar */
+div.mini-sidebar {
+    background-color: var(--overlay-bkg-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-width: 0px;
+    border-color: var(--border-color);
+    border-style: solid;
+    flex-shrink: 0;
+    width: 400px;
+    max-width: 100%;
+    z-index: 25;
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+}
+div.mini-sidebar.left {
+    height: 100%;
+    gap: 10px;
+    left: 0;
+    border-right-width: 1px;
+}
+div.mini-sidebar.right {
+    height: 100%;
+    right: 0;
+    gap: 10px;
+    border-left-width: 1px;
+}
+
+/*  */
+
+div.mini-sidebar .imageinfo-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
 }

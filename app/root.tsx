@@ -18,6 +18,7 @@ import { ModalProvider } from "./components/contexts/modal/modalProvider";
 import { Provider } from "react-redux";
 import store from "./utils/store";
 import { serverHost } from "./utils/vars";
+import Breadcrumbs from "./components/UI/breadcrumbs";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const f = await fetch(`${serverHost}/api/user/get/1`);
@@ -43,6 +44,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <ModalProvider>
               <SidebarProvider>
                 <AppHeader user={i} />
+                <Breadcrumbs />
                 {children}
                 <Footer />
               </SidebarProvider>

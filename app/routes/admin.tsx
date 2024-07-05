@@ -3,22 +3,28 @@ import "./../style/admin-panel.css";
 import TextHeader from "~/components/UI/textHeader";
 import { useEffect, useState } from "react";
 
+export const handle = {
+    breadcrumb: () => {
+        return "Admin";
+    }
+};
+
 const urlprefix = "/admin";
 const pages: {
     path: string;
     title: string;
     default?: boolean;
 }[] = [
-    { title: "Dashboard", path: "/dashboard", default: true },
+    { title: "Dashboard", path: "/", default: true },
     { title: "Users", path: "/users" },
-    // { title: "A", path: "/users" },
-    // { title: "A", path: "/items" },
-    // { title: "A", path: "/UGC" },
-    // { title: "A", path: "/settings" },
-    // { title: "A", path: "/feedback" },
-    // { title: "A", path: "/reports" },
-    // { title: "A", path: "/bans" },
 ]
+// { title: "A", path: "/users" },
+// { title: "A", path: "/items" },
+// { title: "A", path: "/UGC" },
+// { title: "A", path: "/settings" },
+// { title: "A", path: "/feedback" },
+// { title: "A", path: "/reports" },
+// { title: "A", path: "/bans" },
 
 export async function loader({ request }: { request: Request }) {
     // check if user is admin
@@ -38,12 +44,6 @@ export default function Admin() {
     const outlet = useOutlet();
     const data = useLoaderData<{ status: number }>();
     const [page, setPage] = useState("");
-
-    useEffect(() => {
-        if (!outlet) {
-            window.location.href = `${urlprefix}/dashboard`;
-        }
-    }, [location])
 
     useEffect(() => {
         const path = window.location.pathname.replace(urlprefix, "");

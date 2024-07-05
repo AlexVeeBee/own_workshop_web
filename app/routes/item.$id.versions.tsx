@@ -11,6 +11,12 @@ import InfoCard from "~/components/UI/infoCard";
 import Button, { Buttons } from "~/components/UI/buttons";
 import { serverHost } from "~/utils/vars";
 
+export const handle = {
+    breadcrumb: () => {
+        return "Versions";
+    }
+};
+
 export const meta: MetaFunction = () => {
     return [
       { title: "item versions" },

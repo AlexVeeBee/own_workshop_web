@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, MetaFunction, redirect } from "@remix-run/node";
-import { Outlet, useLoaderData, useLocation, useOutlet, useRouteError } from "@remix-run/react";
+import { Link, Outlet, useLoaderData, useLocation, useOutlet, useRouteError } from "@remix-run/react";
 import { Suspense, useEffect, useState } from "react";
 import { AssetVersion, IWorkshopItem } from "~/utils/types";
 
@@ -16,6 +16,12 @@ import TextHeader from "~/components/UI/textHeader";
 import { FetchNotOkError } from "~/utils/errors";
 import SimpleError from "~/components/_simpleError";
 
+export const handle = {
+    breadcrumb: () => {
+        return "Item";
+    }
+};
+
 export const meta: MetaFunction = () => {
     return [
       { title: "Item" },
@@ -24,14 +30,19 @@ export const meta: MetaFunction = () => {
 };
 
 const urlprefix = "/item";
-const pages = [
-    "overview",
-    "comments",
-    "changelog",
-    "versions",
-    "config",
-    "debug"
+const pages: {
+    path: string;
+    title: string;
+    default?: boolean;
+}[] = [
+    { title: "Overview", path: "/", default: true },
+    { title: "Comments", path: "comments" },
+    { title: "Changelog", path: "changelog" },
+    { title: "Versions", path: "versions" },
+    { title: "Config", path: "config" },
+    { title: "Debug", path: "debug" }
 ]
+
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
     const f = await fetch(`${serverHost}/v1/workshop/get/${params.id}`);
@@ -49,6 +60,7 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     }
 }
 
+  
 interface ItemWarning {
     type: "warning" | "error" | "info",
     message: string
@@ -62,13 +74,9 @@ export default function Item() {
         id: string,
         item: IWorkshopItem,
         versions: AssetVersion[],
-        // versions: {
-        //     version: string,
-        //     isLatest: boolean
-        // }[]
     }>();
-    const [tabIndex, setTabIndex] = useState(-1);
-    const [showThumb, setShowThumb] = useState(true);
+    const [tabIndex, setTabIndex] = useState(0);
+    const [page, setPage] = useState("");
     const [versionsAvailable, setVersionsAvailable] = useState(false);
     const [itemWarnings] = useState<Map<string, ItemWarning>>(new Map());
     useEffect(() => {
@@ -96,19 +104,24 @@ export default function Item() {
                 message: "This item is marked as NSFW"
             });
         }
-    }, [i])
+    }, [location])
     
     useEffect(() => {
-        const page = window.location.pathname.split("/").pop();
-        if (page && pages.includes(page)) {
-            setTabIndex(pages.indexOf(page));
-            console.log("setting tab index to", pages.indexOf(page));
-            if (page === "overview") {
-                i.item.media && i.item.media.length > 0 ? setShowThumb(true) : setShowThumb(false);
-            } else {
-                setShowThumb(true);
+        if (location.pathname === urlprefix) {
+            setTabIndex(0);
+        } else {
+            const path = location.pathname.split("/").pop();
+            const index = pages.findIndex((p) => p.path === path);
+            if (index !== -1) {
+                setTabIndex(index);
             }
         }
+
+        // const path = location.pathname.replace(urlprefix, "");
+        // const p = pages.find((p) => p.path === path);
+        // if (p) {
+        //     setPage(p.path);
+        // }
     }, [location])
 
     return (
@@ -145,7 +158,7 @@ export default function Item() {
                 tabs={[
                     {
                         title: "Overview",
-                        link: `${urlprefix}/${i.id}/overview`,
+                        link: `${urlprefix}/${i.id}/`,
                         position: "left"
                     },
                     {
@@ -186,7 +199,7 @@ export default function Item() {
                     <WorkshopItemSidebar 
                         version={versionsAvailable ? i.versions[0].version : ""}
                         authors={i.item.authors}
-                        thumb={showThumb ? i.item.thumb : ""}
+                        thumb={i.item.thumb}
                         tags={i.item.tags}
                         owner={i.item.owner}
                     />

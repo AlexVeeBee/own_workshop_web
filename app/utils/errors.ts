@@ -13,3 +13,10 @@ export class FetchNotOkError extends Error {
         this.name = "FetchNotOkError";
     }
 }
+
+export class FetchError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = "FetchError";
+    }
+}

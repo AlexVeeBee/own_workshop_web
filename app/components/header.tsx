@@ -117,35 +117,7 @@ const UserModal = (
     {userData: IUser, setShowLoginButton: (show: boolean) => void, setUserData: (user: IUser | null) => void}
 ) => {
     const modal = useModal();
-    const useUserProvider = useUser();
     const dispatch = useAppDispatch();
-    // modal.openModal({
-    //     id: "user-modal",
-    //     title: userData.username,
-    //     content: (id) => (
-    //         <>
-    //             <UserHeaderModal user={userData} />
-    //             <div className="flex justify-center" style={{marginTop: "20px"}}>
-    //                 <a className="btn" href={`/user/${userData.id}`}>View workshop</a>
-    //                 <Buttons.Button
-    //                     btnType="DANGER"
-    //                     onClick={() => {
-    //                         useUserProvider.logout().then(() => {
-    //                             setUserData(null);
-    //                             setShowLoginButton(true);
-    //                             modal.closeModal(id);
-    //                         });
-    //                     }}
-    //                 >Logout</Buttons.Button>
-    //             </div>
-    //         </>
-    //     ),
-    //     style: {
-    //         width: "100%",
-    //         height: "100%",
-    //         maxWidth: "var(--page-width)",
-    //     }
-    // })
 
     return (
         <>
@@ -164,7 +136,7 @@ const UserModal = (
                         <p>View workshop</p>
                     </Buttons.LiminalButton>
                 </Link>
-                <Link style={{ borderRadius: "64px", }} to={`/account/overview`} className="link">
+                <Link style={{ borderRadius: "64px", }} to={`/account`} className="link">
                     <Buttons.LiminalButton
                         style={{ padding: "10px", borderRadius: "64px", }}
                         onClick={() => { modal.closeModal("user-modal"); }}
@@ -292,7 +264,7 @@ export function AppHeader({
                                 userData.admin && (
                                     <Link style={{
                                         borderRadius: "64px",
-                                    }} to="/admin/dashboard" className="link">
+                                    }} to="/admin" className="link">
                                     <Buttons.LiminalButton
                                         style={{
                                             padding: "10px",

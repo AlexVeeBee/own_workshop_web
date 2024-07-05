@@ -5,6 +5,7 @@ import InfoCard from "../UI/infoCard";
 import Button from "../UI/buttons";
 import { useModal } from "../contexts/modal/modalProvider";
 import ImageGallery from "../imageGallery";
+import DragAndDrop from "./dragAndDrop";
 
 interface UploadModalProps {
     modalid: string;
@@ -27,14 +28,13 @@ export default function UploadModal({
         | Event
     ) => {
         uploadArea.current?.classList.remove("hover");
-        if (uploadArea.current) uploadArea.current.style.borderColor = "#333";
         // @ts-ignore
         const files = e?.target?.files;
         if (!files) return;
         setFiles(files);
     }
 
-    const insertFilesFromEvent = (e: DragEvent<HTMLDivElement>) => {
+    const insertFilesFromEvent = (e: DragEvent) => {
         e.preventDefault();
         uploadArea.current?.classList.remove("hover");
         console.log(e.dataTransfer.files);
@@ -51,27 +51,27 @@ export default function UploadModal({
         return Math.round(bytes / Math.pow(1024, i)) + ' ' + sizes[i];
     }
 
-    useEffect(() => {
-        uploadField.current?.addEventListener("change", (e) => {
-            uploadArea.current?.classList.remove("hover");
-            if (uploadArea.current) uploadArea.current.style.borderColor = "#333";
-            onFileInsert(e);
-        });
-        // hover
-        uploadArea.current?.addEventListener("dragenter", () => {
-            uploadArea.current?.classList.add("hover");
-            if (uploadArea.current) uploadArea.current.style.borderColor = "#666";
-        });
-        uploadArea.current?.addEventListener("dragleave", () => {
-            uploadArea.current?.classList.remove("hover");
-            if (uploadArea.current) uploadArea.current.style.borderColor = "#333";
-        });
-        return () => {
-            uploadField.current?.removeEventListener("change", () => {});
-            uploadArea.current?.removeEventListener("dragenter", () => {});
-            uploadArea.current?.removeEventListener("dragleave", () => {});
-        }
-    }, [uploadField, uploadArea]);
+    // useEffect(() => {
+    //     uploadField.current?.addEventListener("change", (e) => {
+    //         uploadArea.current?.classList.remove("hover");
+    //         if (uploadArea.current) uploadArea.current.style.borderColor = "#333";
+    //         onFileInsert(e);
+    //     });
+    //     // hover
+    //     uploadArea.current?.addEventListener("dragenter", () => {
+    //         uploadArea.current?.classList.add("hover");
+    //         if (uploadArea.current) uploadArea.current.style.borderColor = "#666";
+    //     });
+    //     uploadArea.current?.addEventListener("dragleave", () => {
+    //         uploadArea.current?.classList.remove("hover");
+    //         if (uploadArea.current) uploadArea.current.style.borderColor = "#333";
+    //     });
+    //     return () => {
+    //         uploadField.current?.removeEventListener("change", () => {});
+    //         uploadArea.current?.removeEventListener("dragenter", () => {});
+    //         uploadArea.current?.removeEventListener("dragleave", () => {});
+    //     }
+    // }, [uploadField, uploadArea]);
 
     return (
         <div className="upload-modal flex column"
@@ -85,7 +85,7 @@ export default function UploadModal({
                 <p>Max files: 1</p>
             </Card>
             <Card>
-                <div 
+                {/* <div 
                     ref={uploadArea}
                     className="flex column drag-or-click-upload fillwidth justify-center align-center"
                     style={{
@@ -106,7 +106,20 @@ export default function UploadModal({
                     }}
                 >
                     <p style={{pointerEvents: "none"}}>Drag or click to upload</p>
-                </div>
+                </div> */}
+                <DragAndDrop
+                    onFileInsert={onFileInsert}
+                    insertFilesFromEvent={insertFilesFromEvent}
+                    uploadArea={uploadArea}
+                    uploadField={uploadField}
+                    // files={files}
+                    // setFiles={setFiles}
+                    accepts={[
+                        "application/zip",
+                        "application/zip-compressed",
+                        "application/x-zip-compressed"
+                    ]}                    
+                />
             </Card>
             <Card>
                 <div className="flex align-center"

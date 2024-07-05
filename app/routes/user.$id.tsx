@@ -16,6 +16,21 @@ import { useModal } from "~/components/contexts/modal/modalProvider";
 import UploadModal from "~/components/uploads/modal";
 import { serverHost } from "~/utils/vars";
 
+export const handle = {
+    breadcrumb: () => {
+        return "User";
+    }
+};
+
+const pages: {
+    path: string;
+    title: string;
+    default?: boolean;
+}[] = [
+    { title: "Items", path: "/", default: true },
+    { title: "Info", path: "/users" },
+]
+
 export async function loader({ params }: { params: { id: string } }) {
     const f = await fetch(`${serverHost}/v1/user/get/${params.id}`);
     if (!f.ok) {

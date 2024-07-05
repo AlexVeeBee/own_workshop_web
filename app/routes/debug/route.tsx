@@ -1,7 +1,40 @@
+import { DragEvent, useEffect, useRef, useState } from "react";
 import InfoCard from "~/components/UI/infoCard";
 import ImageGallery from "~/components/imageGallery";
+import DragAndDrop from "~/components/uploads/dragAndDrop";
+import { TagTest } from "./comp.TagsTest";
+import Error from "~/components/_error";
+import { useRouteError } from "@remix-run/react";
+import SimpleError from "~/components/_simpleError";
+import { useModal } from "~/components/contexts/modal/modalProvider";
+import Button from "~/components/UI/buttons";
+
+
+export const handle = {
+    breadcrumb: () => {
+        return "Debug zone";
+    }
+};
+
+// mock ReferenceError: DataTransfer is not defined
 
 export default function DebugPage() {
+    const modal = useModal();
+
+    const openTagTest = () => {
+        modal.openModal({
+            id: "imageUtils",
+            title: "Image Utils",
+            style: {
+                width: "100%",
+                height: "100%",
+            },
+            content(id, forceClose) {
+                return <TagTest />
+            },
+        })
+    }
+
     return (
         <main>
             <div className="center flex column align-start">
@@ -64,6 +97,7 @@ export default function DebugPage() {
                 <ImageGallery
                     imageSwitcher="arrows"
                     showimageinfo={true}
+                    showImageInfoButton={true}
                     images={[
                         // place holder images
                         {
@@ -102,7 +136,20 @@ export default function DebugPage() {
                     <p>This is a success card</p>
                     <a>Click me</a>
                 </InfoCard>
+                <Button
+                    onClick={openTagTest}
+                    btnType="PRIMARY"
+                >Open Image Utils</Button>
             </div>
         </main>
     )
+}
+
+export function ErrorBoundary() {
+    const error = useRouteError();
+    return (
+        <main>
+            <div className="center"> <SimpleError errordata={error} /> </div>
+        </main>
+    );
 }

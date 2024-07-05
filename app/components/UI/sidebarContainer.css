@@ -10,8 +10,6 @@
     overflow-x: hidden;
     background-color: var(--secondary-bkg-color);
     padding: var(--global-page-padding-2);
-    margin: var(--global-page-padding-2);
-    border-radius: 10px;
 }
 .sidebar-container .sidebar > .content {
     display: flex;

@@ -10,6 +10,12 @@ import ImageGallery from "~/components/imageGallery";
 import InfoCard from "~/components/UI/infoCard";
 import ChangeLogItem from "~/components/UI/changeLog";
 
+export const handle = {
+    breadcrumb: () => {
+        return "Change Log";
+    }
+};
+
 export const meta: MetaFunction = () => {
     return [
       { title: "Item" },

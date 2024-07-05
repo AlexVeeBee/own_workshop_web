@@ -17,6 +17,12 @@ import { useUser } from "~/components/contexts/user/userProvider";
 import { serverHost } from "~/utils/vars";
 import Markdown from "~/components/UI/Markdown";
 
+export const handle = {
+    breadcrumb: () => {
+        return "Overview";
+    }
+};
+
 export const meta: MetaFunction = () => {
     return [
       { title: "Item" },

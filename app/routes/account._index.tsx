@@ -6,6 +6,12 @@ import { WorkshopHeader } from "~/components/workshop_page/WorkshopHeader";
 import { useAppSelector } from "~/utils/hooks";
 import { serverHost } from "~/utils/vars";
 
+export const handle = {
+    breadcrumb: () => {
+        return "Overview";
+    }
+};
+
 export default function AccountOverview() {
     const userstore = useAppSelector(state => state.user)
 
